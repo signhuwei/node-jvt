@@ -90,7 +90,8 @@ Napi::Number vLogout(const Napi::CallbackInfo& info) {
 * output: <Object> ConfigStruct (error:nulll)
 */
 #define SDK_CONFIG_INIT(TYPE,SST) \
-    SST config = {{0}}; \
+    SST config; \
+    memset(&config,0,sizeof(SST));  \
     pConfigParams = (char*)&config; \
     nSizeOfConfig = sizeof(SST); \
     nCommand = TYPE; 
