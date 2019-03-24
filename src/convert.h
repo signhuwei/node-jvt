@@ -66,9 +66,14 @@ CONVERT_FUNCTION(SDK_CONFIG_NORMAL)
     obj.Set("sysTime",convert(env,res.sysTime));   //系统时间
     obj.Set("iLocalNo",res.iLocalNo);    ///< 本机编号:[0, 998] */
     obj.Set("iOverWrite",res.iOverWrite);    ///< 硬盘满时处理 "OverWrite（iOverWrite=1）", "StopRecord（iOverWrite=0）" */		
+    #ifdef _WIN32
+    obj.Set("iSnapInterval",res.iSnapInterval);			///< 定时抓图的时间间隔，以秒为单位 
+
+    #elif __linux__
     obj.Set("cIranCalendarEnable",res.cIranCalendarEnable);    ///< 是否启用伊朗日历，1表示启用，0表示不启用
     obj.Set("cFontSize",res.cFontSize);    ///< 矢量字体大小
     obj.Set("reserved",res.reserved);
+    #endif
     obj.Set("sMachineName",res.sMachineName);    ///< 机器名
     obj.Set("iVideoStartOutPut",res.iVideoStartOutPut);    ///< 输出模式 */
     obj.Set("iAutoLogout",res.iAutoLogout);    ///< 本地菜单自动注销(分钟)	[0, 120]
@@ -87,10 +92,13 @@ RE_CONVERT_FUNCTION(SDK_CONFIG_NORMAL)
     
     obj->iLocalNo = res.Get("iLocalNo").As<Napi::Number>();
     obj->iOverWrite = res.Get("iOverWrite").As<Napi::Number>();
-    
+    #ifdef _WIN32
+    obj->iSnapInterval = res.Get("iSnapInterval").As<Napi::Number>();
+    #elif
     COPY_STRING_VALUE(cIranCalendarEnable)
     COPY_STRING_VALUE(cFontSize)
     COPY_STRING_VALUE(reserved)
+    #endif
     COPY_STRING_VALUE(sMachineName)
     
     obj->iVideoStartOutPut = res.Get("iVideoStartOutPut").As<Napi::Number>();
