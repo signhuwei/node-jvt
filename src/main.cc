@@ -151,7 +151,7 @@ Napi::Value vConfigCamera(const Napi::CallbackInfo& info){
       }
     }
     long errorCode = VideoNet_GetLastError();
-    strstream ss;
+    std::strstream ss;
     ss << errorCode;
     Napi::Error::New(env,std::string("Error Code:")+ss.str()).ThrowAsJavaScriptException();
     return env.Null();
