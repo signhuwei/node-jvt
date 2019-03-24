@@ -109,6 +109,7 @@ Napi::Value vConfigCamera(const Napi::CallbackInfo& info){
     return env.Null();
   }
   long nLoginID = info[0].As<Napi::Number>().Int32Value();
+  int nWaitTime = 10000;
   char * pConfigParams;
   unsigned long nSizeOfConfig = 0;
   std::string strConfigType = std::string("E_SDK_CONFIG_SYSNORMAL");
@@ -137,26 +138,38 @@ Napi::Value vConfigCamera(const Napi::CallbackInfo& info){
       Napi::TypeError::New(env, "ConfigParams should be Object!").ThrowAsJavaScriptException();
       return env.Null();
     }
+    if(strConfigType == "E_SDK_CONFIG_SYSNORMAL"){
+        convert(info[2].As<Napi::Object>(),(SDK_CONFIG_NORMAL*)pConfigParams);
+    }else if(strConfigType == "E_SDK_CONFIG_CAMERA"){
+      convert(info[2].As<Napi::Object>(),(SDK_CameraParam*)pConfigParams);
+    }else if(strConfigType == "E_SDK_CONFIG_ABILITY_CAMERA"){
+      //convert(info[2].As<Napi::Object>(),(SDK_CameraAbility*)pConfigParams);
+    }
+    long bSuccess = VideoNet_SetDevConfig(nLoginID,nCommand,-1,pConfigParams,nSizeOfConfig,nWaitTime);
 
+    if( bSuccess == 1){
+      return info[2];
+    }
   }else{
-    int nWaitTime = 10000;
     unsigned long dwRetLen = 0;
-    long bSuccess = VideoNet_GetDevConfig(nLoginID, nCommand ,0,pConfigParams ,nSizeOfConfig, &dwRetLen,nWaitTime);
+    long bSuccess = VideoNet_GetDevConfig(nLoginID, nCommand ,-1,pConfigParams ,nSizeOfConfig, &dwRetLen,nWaitTime);
     
-    if ( bSuccess && dwRetLen == nSizeOfConfig){
+    if ( bSuccess == 1 && dwRetLen == nSizeOfConfig){
       if(strConfigType == "E_SDK_CONFIG_SYSNORMAL"){
         return convert(env,*(SDK_CONFIG_NORMAL*)pConfigParams);
       }else if(strConfigType == "E_SDK_CONFIG_CAMERA"){
         return convert(env,*(SDK_CameraParam*)pConfigParams);
+      }else if(strConfigType == "E_SDK_CONFIG_ABILITY_CAMERA"){
+        return convert(env,*(SDK_CameraAbility*)pConfigParams);
       }
     }
-    long errorCode = VideoNet_GetLastError();
-    std::strstream ss;
-    ss << errorCode;
-    Napi::Error::New(env,std::string("Error Code:")+ss.str()).ThrowAsJavaScriptException();
-    return env.Null();
   }
 
+  long errorCode = VideoNet_GetLastError();
+  std::strstream ss;
+  ss << errorCode;
+  Napi::Error::New(env,std::string("Error Code:")+ss.str()).ThrowAsJavaScriptException();
+  return env.Null();
   
 }
 
