@@ -34,8 +34,6 @@ CONVERT_FUNCTION(DSTPoint)
     obj.Set("iWeekDay",res.iWeekDay); 
 CONVERT_RETURN
 
-
-
 CONVERT_FUNCTION(SDK_CONFIG_NORMAL)	
     obj.Set("sysTime",convert(env,res.sysTime));   //系统时间
     obj.Set("iLocalNo",res.iLocalNo);    ///< 本机编号:[0, 998] */
@@ -58,26 +56,35 @@ CONVERT_FUNCTION(SDK_CONFIG_NORMAL)
 CONVERT_RETURN
 
 
-CONVERT_FUNCTION(SDK_CameraParam)
 
+CONVERT_FUNCTION(SDK_ExposureCfg)
+    obj.Set("level",res.level);  //曝光等级
+    obj.Set("leastTime",res.leastTime);  //自动曝光时间下限或手动曝光时间，单位微秒
+    obj.Set("leastTime",res.mostTime);  //自动曝光时间上限，单位微秒
 CONVERT_RETURN
+
+CONVERT_FUNCTION(SDK_GainCfg)
+    obj.Set("gain",res.gain);//自动增益上限(自动增益启用)或固定增益值
+    obj.Set("autoGain",res.autoGain);//自动增益是否启用，0:不开启  1:开启
+CONVERT_RETURN
+
 CONVERT_FUNCTION(SDK_CameraParam)
-    obj.Set("whiteBalance",res.whiteBalance);    //白平衡
-    obj.Set("dayNightColor",res.dayNightColor);    //日夜模式，取值有彩色、自动切换和黑白
-    obj.Set("elecLevel",res.elecLevel);    //参考电平值
-    obj.Set("apertureMode",res.apertureMode);    //自动光圈模式
-    obj.Set("BLCMode",res.BLCMode);    //背光补偿模式
-    obj.Set("exposureConfig",res.exposureConfig);    //曝光配置
-    obj.Set("gainConfig",res.gainConfig);    //增益配置
-    obj.Set("PictureFlip",res.PictureFlip);    //图片上下翻转
-    obj.Set("PictureMirror",res.PictureMirror);    //图片左右翻转(镜像)
-    obj.Set("RejectFlicker",res.RejectFlicker);    //日光灯防闪功能
-    obj.Set("EsShutter",res.EsShutter);    //电子慢快门功能
-    obj.Set("ircut_mode",res.ircut_mode);    //IR-CUT切换 0 = 红外灯同步切换 1 = 自动切换
-    obj.Set("dnc_thr",res.dnc_thr);    //日夜转换阈值
-    obj.Set("ae_sensitivity",res.ae_sensitivity);    //ae灵敏度配置
-    obj.Set("Day_nfLevel",res.Day_nfLevel);    //noise filter 等级，0-5,0不滤波，1-5 值越大滤波效果越明显
+    obj.Set("whiteBalance",res.whiteBalance);           //白平衡
+    obj.Set("dayNightColor",res.dayNightColor);         //日夜模式，取值有彩色、自动切换和黑白
+    obj.Set("elecLevel",res.elecLevel);                 //参考电平值
+    obj.Set("apertureMode",res.apertureMode);           //自动光圈模式
+    obj.Set("BLCMode",res.BLCMode);                     //背光补偿模式
+    obj.Set("exposureConfig",convert(env,res.exposureConfig));      //曝光配置
+    obj.Set("gainConfig",convert(env,res.gainConfig));              //增益配置
+    obj.Set("PictureFlip",res.PictureFlip);             //图片上下翻转
+    obj.Set("PictureMirror",res.PictureMirror);         //图片左右翻转(镜像)
+    obj.Set("RejectFlicker",res.RejectFlicker);         //日光灯防闪功能
+    obj.Set("EsShutter",res.EsShutter);                 //电子慢快门功能
+    obj.Set("ircut_mode",res.ircut_mode);               //IR-CUT切换 0 = 红外灯同步切换 1 = 自动切换
+    obj.Set("dnc_thr",res.dnc_thr);                     //日夜转换阈值
+    obj.Set("ae_sensitivity",res.ae_sensitivity);       //ae灵敏度配置
+    obj.Set("Day_nfLevel",res.Day_nfLevel);             //noise filter 等级，0-5,0不滤波，1-5 值越大滤波效果越明显
     obj.Set("Night_nfLevel",res.Night_nfLevel);    //
-    obj.Set("Ircut_swap",res.Ircut_swap);    //ircut 正常序= 0        反序= 1
-    obj.Set("high_light",res.high_light);    //强光抑制功能 0~255,默认是16
+    obj.Set("Ircut_swap",res.Ircut_swap);               //ircut 正常序= 0        反序= 1
+    obj.Set("high_light",res.high_light);               //强光抑制功能 0~255,默认是16
 CONVERT_RETURN
