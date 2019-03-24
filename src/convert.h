@@ -94,7 +94,7 @@ RE_CONVERT_FUNCTION(SDK_CONFIG_NORMAL)
     obj->iOverWrite = res.Get("iOverWrite").As<Napi::Number>();
     #ifdef _WIN32
     obj->iSnapInterval = res.Get("iSnapInterval").As<Napi::Number>();
-    #elif
+    #elif __linux__
     COPY_STRING_VALUE(cIranCalendarEnable)
     COPY_STRING_VALUE(cFontSize)
     COPY_STRING_VALUE(reserved)
