@@ -130,9 +130,11 @@ Napi::Value vConfigCamera(const Napi::CallbackInfo& info){
     SDK_CONFIG_INIT(E_SDK_CONFIG_CAMERA,SDK_CameraParam)
   }else if(strConfigType == "E_SDK_CONFIG_ABILITY_CAMERA"){
     SDK_CONFIG_INIT(E_SDK_CONFIG_ABILITY_CAMERA,SDK_CameraAbility)
+  }else if(strConfigType == "E_SDK_CFG_PARAM_EX"){
+    SDK_CONFIG_INIT(E_SDK_CONFIG_ABILITY_CAMERA,SDK_CameraParamEx)
   }else{
     Napi::TypeError::New(env, "ConfigType not support!").ThrowAsJavaScriptException();
-      return env.Null();
+    return env.Null();
   }
   //set configParams
   if(!info[2].IsUndefined()){
@@ -145,7 +147,9 @@ Napi::Value vConfigCamera(const Napi::CallbackInfo& info){
     }else if(strConfigType == "E_SDK_CONFIG_CAMERA"){
       convert(info[2].As<Napi::Object>(),(SDK_CameraParam*)pConfigParams);
     }else if(strConfigType == "E_SDK_CONFIG_ABILITY_CAMERA"){
-      //convert(info[2].As<Napi::Object>(),(SDK_CameraAbility*)pConfigParams);
+      convert(info[2].As<Napi::Object>(),(SDK_CameraAbility*)pConfigParams);
+    }else if(strConfigType == "E_SDK_CFG_PARAM_EX"){
+      convert(info[2].As<Napi::Object>(),(SDK_CameraParamEx*)pConfigParams);
     }
     long bSuccess = VideoNet_SetDevConfig(nLoginID,nCommand,-1,pConfigParams,nSizeOfConfig,nWaitTime);
 
@@ -163,6 +167,8 @@ Napi::Value vConfigCamera(const Napi::CallbackInfo& info){
         return convert(env,*(SDK_CameraParam*)pConfigParams);
       }else if(strConfigType == "E_SDK_CONFIG_ABILITY_CAMERA"){
         return convert(env,*(SDK_CameraAbility*)pConfigParams);
+      }else if(strConfigType == "E_SDK_CFG_PARAM_EX"){
+        return convert(env,*(SDK_CameraParamEx*)pConfigParams);
       }
     }
   }

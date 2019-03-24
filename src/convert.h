@@ -191,3 +191,64 @@ CONVERT_FUNCTION(SDK_CameraAbility)
 	obj.Set("resv1",res.resv1);             //保留，如果增加char型的成员先用这里的
 	obj.Set("reserve",res.reserve);         //保留，如果增加int型的成员用这里
 CONVERT_RETURN
+RE_CONVERT_FUNCTION(SDK_CameraAbility)
+    obj->count = res.Get("count").As<Napi::Number>();
+    Napi::Array speeds = res.Get("speeds").As<Napi::Array>();
+    for(int i = 0;i < obj->count;++i){
+        obj->speeds[i] = speeds.Get(i).As<Napi::Number>();
+    }
+    obj->status = res.Get("status").As<Napi::Number>();
+    obj->elecLevel = res.Get("elecLevel").As<Napi::Number>();
+    obj->luminance = res.Get("luminance").As<Napi::Number>();
+
+    COPY_STRING_VALUE(pVersion)
+    COPY_STRING_VALUE(isFishLens)
+    COPY_STRING_VALUE(resv1)
+    COPY_STRING_VALUE(reserve)
+RE_CONVERT_RETURN
+
+
+
+CONVERT_FUNCTION(SDK_CameraParamEx)
+    obj.Set("broadTrends",convert(env,res.broadTrends));       //宽动态                     
+    obj.Set("style",res.style);                                //enum SDK_IMG_TYPE            
+    obj.Set("exposureTime",res.exposureTime);                  //实际生效的曝光时间                         
+    obj.Set("Dis",res.Dis);                                    //电子防抖设置  0:关闭 1:开启**/        
+    obj.Set("Ldc",res.Ldc);                                    //镜头畸变校正  0:关闭 1:开启**/        
+    obj.Set("AeMeansure",res.AeMeansure);                      //测光模式校正  0:平均测光 1:中央测光**/                     
+    obj.Set("LowLuxMode",res.LowLuxMode);                      //微光模式 mode：0 关闭 1开启 ==only imx291                     
+    obj.Set("corridor_mode",res.corridor_mode);                //1:走廊模式  0:普通模式                         
+    obj.Set("lightRestrainLevel",res.lightRestrainLevel);      // 强光抑制功能0~255，默认16 
+
+    Napi::Array ress = Napi::Array::New(env,sizeof(res.res));
+    for(int i = 0;i < sizeof(res.res);++i){
+        ress.Set(i,res.res[i]);
+    }                             
+    obj.Set("res",ress);                                    //冗余           
+CONVERT_RETURN
+RE_CONVERT_FUNCTION(SDK_CameraParamEx)
+    COPY_OBJECT_VALUE(broadTrends)
+    obj->style = res.Get("style").As<Napi::Number>();
+    obj->exposureTime = res.Get("exposureTime").As<Napi::Number>();
+    obj->Dis = res.Get("Dis").As<Napi::Number>();
+    obj->Ldc = res.Get("Ldc").As<Napi::Number>();
+    obj->AeMeansure = res.Get("AeMeansure").As<Napi::Number>();
+    obj->LowLuxMode = res.Get("LowLuxMode").As<Napi::Number>();
+    obj->corridor_mode = res.Get("corridor_mode").As<Napi::Number>();
+    obj->lightRestrainLevel = res.Get("lightRestrainLevel").As<Napi::Number>();
+
+    Napi::Array ress = res.Get("res").As<Napi::Array>();
+    for(int i = 0;i < sizeof(obj->res);++i){
+        obj->res[i] = ress.Get(i).As<Napi::Number>();
+    }
+RE_CONVERT_RETURN
+
+
+
+
+
+
+
+
+
+
