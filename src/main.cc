@@ -1,5 +1,8 @@
 #include <napi.h>
 #include "jvt.h"
+#ifdef __APPLE__//Not support but developing ineed
+    using namespace SDK_JVTFACE;
+#endif
 #ifdef __linux__
     using namespace SDK_JVTFACE;
 #endif
