@@ -1,7 +1,4 @@
 {
-  "variables":{
-    "libs_dir%":"<!(node config.js libs)"
-  },
   "targets": [
     {
       "target_name": "jvt",
