@@ -1,8 +1,12 @@
 #include <napi.h>
+#include "jvt.h"
+#ifdef __linux__
+    using namespace SDK_JVTFACE;
+#endif
 
 Napi::Number vInit(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
-  long ret = VideoNet_Init(NULL,1);
+  long ret = VideoNet_Init(0,1);
   return Napi::Number::New(env,ret);
 }
 Napi::Boolean vCleanup(const Napi::CallbackInfo& info) {
@@ -46,28 +50,28 @@ Napi::Number vLogout(const Napi::CallbackInfo& info) {
   return Napi::Number::New(env,ret);
 }
 
-Napi::Boolean vConfigCarme(const Napi::CallbackInfo& info){
+Napi::Boolean vConfigCamera(const Napi::CallbackInfo& info){
   Napi::Env env = info.Env();
   if (info.Length() < 1) {
     Napi::TypeError::New(env, "Wrong count of arguments").ThrowAsJavaScriptException();
     return Napi::Boolean::New(env,false);
   }
   if (!info[0].IsNumber()) {
-    Napi::TypeError::New(env, "Wrong arguments type").ThrowAsJavaScriptException();
+    Napi::TypeError::New(env, "Fault to try input number of login id!").ThrowAsJavaScriptException();
     return Napi::Boolean::New(env,false);
   }
+
   long loginID = info[0].As<Napi::Number>().Int32Value();
   unsigned long dwRetLen = 0;
 	int nWaitTime = 10000;
 	SDK_CONFIG_NORMAL NormalConfig = {{0}};
+  //E_SDK_CONFIG_CAMERA
 	BOOL bSuccess = VideoNet_GetDevConfig(loginID, E_SDK_CONFIG_SYSNORMAL ,0, 
 		(char *)&NormalConfig ,sizeof(SDK_CONFIG_NORMAL), &dwRetLen,nWaitTime);
 	if ( bSuccess && dwRetLen == sizeof(SDK_CONFIG_NORMAL))
-	{
     return Napi::Boolean::New(env,true);
-	}
   
-    return Napi::Boolean::New(env,false);
+  return Napi::Boolean::New(env,false);
 }
 
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
@@ -79,8 +83,8 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
               Napi::Function::New(env, vLogin));
   exports.Set(Napi::String::New(env, "vLogout"),
               Napi::Function::New(env, vLogout));
-  exports.Set(Napi::String::New(env, "vConfigCarme"),
-              Napi::Function::New(env, vConfigCarme));
+  exports.Set(Napi::String::New(env, "vConfigCamera"),
+              Napi::Function::New(env, vConfigCamera));
   return exports;
 }
 
