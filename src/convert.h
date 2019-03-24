@@ -177,11 +177,11 @@ RE_CONVERT_RETURN
 CONVERT_FUNCTION(SDK_CameraAbility)
     obj.Set("count",res.count);     		//支持曝光速度数量
 
-    // Napi::Array speeds = Napi::Array::New(env,sizeof(res.speeds));
-    // for(int i = 0;i < sizeof(res.speeds);++i){
-    //     speeds.Set(i,res.speeds[i]);
-    // }
-    obj.Set("speeds",res.speeds);               //曝光速度
+    Napi::Array speeds = Napi::Array::New(env,res.count);
+    for(int i = 0;i < res.count;++i){
+        speeds.Set(i,res.speeds[i]);
+    }
+    obj.Set("speeds",speeds);               //曝光速度
 
     obj.Set("status",res.status);           //工作状态  >= 0 正常    < 0 异常
     obj.Set("elecLevel",res.elecLevel);     //参考电平值

@@ -128,6 +128,8 @@ Napi::Value vConfigCamera(const Napi::CallbackInfo& info){
     SDK_CONFIG_INIT(E_SDK_CONFIG_SYSNORMAL,SDK_CONFIG_NORMAL)
   }else if(strConfigType == "E_SDK_CONFIG_CAMERA"){
     SDK_CONFIG_INIT(E_SDK_CONFIG_CAMERA,SDK_CameraParam)
+  }else if(strConfigType == "E_SDK_CONFIG_ABILITY_CAMERA"){
+    SDK_CONFIG_INIT(E_SDK_CONFIG_ABILITY_CAMERA,SDK_CameraAbility)
   }else{
     Napi::TypeError::New(env, "ConfigType not support!").ThrowAsJavaScriptException();
       return env.Null();
