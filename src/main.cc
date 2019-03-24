@@ -32,8 +32,8 @@ Napi::Number vLogin(const Napi::CallbackInfo& info) {
   std::string username = info[1].As<Napi::String>();
   std::string password = info[2].As<Napi::String>();
 
-  VIDEONET_DEVICEINFO OutDev; 
-	memset(&OutDev,0,sizeof(OutDev));
+  VIDEONET_DEVICEINFO OutDev = {{0}};
+	//memset(&OutDev,0,sizeof(OutDev));
   int nError = 0;		
   int ret = VideoNet_Login((char*)uuidip.c_str(), 36123, (char*)username.c_str(),(char*)password.c_str(),(LPVIDEONET_DEVICEINFO)(&OutDev),&nError);
   return Napi::Number::New(env, ret);
