@@ -48,15 +48,16 @@ Napi::Number vLogin(const Napi::CallbackInfo& info) {
   std::string username = info[1].As<Napi::String>();
   std::string password = info[2].As<Napi::String>();
   int port = 36123;
-  if(info[3]){
+  if(!info[3].IsUndefined()){
     if(!info[3].IsNumber()) {
-      Napi::TypeError::New(env, "Type of port should be Number").ThrowAsJavaScriptException();
+      Napi::TypeError::New(env, "Type of port should be Number ").ThrowAsJavaScriptException();
       return Napi::Number::New(env,0);
     }
     port = info[3].As<Napi::Number>();
   }
 
-  VIDEONET_DEVICEINFO OutDev = {{0}};
+  VIDEONET_DEVICEINFO OutDev;
+  memset(&OutDev,0,sizeof(VIDEONET_DEVICEINFO));
   int nError = 0;		
   int ret = VideoNet_Login((char*)uuidip.c_str(), port, (char*)username.c_str(),(char*)password.c_str(),(LPVIDEONET_DEVICEINFO)(&OutDev),&nError);
   return Napi::Number::New(env, ret);
@@ -113,7 +114,7 @@ Napi::Value vConfigCamera(const Napi::CallbackInfo& info){
   unsigned long nCommand;
 
   //configType
-  if(info[1]){
+  if(!info[1].IsUndefined()){
     if (!info[1].IsString()) {
       Napi::TypeError::New(env, "ConfigType should be String!").ThrowAsJavaScriptException();
       return env.Null();
