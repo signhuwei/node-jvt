@@ -1,4 +1,5 @@
 #include <napi.h>
+#include <strstream>
 #include "jvt.h"
 #include "convert.h"
 #ifdef __APPLE__//Not support but developing ineed
@@ -131,26 +132,32 @@ Napi::Value vConfigCamera(const Napi::CallbackInfo& info){
       return env.Null();
   }
   //set configParams
-  // if(info[2]){
-  //   if (!info[2].IsObject()) {
-  //     Napi::TypeError::New(env, "ConfigParams should be Object!").ThrowAsJavaScriptException();
-  //     return env.Null();
-  //   }
-  // }
-
-  int nWaitTime = 10000;
-  unsigned long dwRetLen = 0;
-	long bSuccess = VideoNet_GetDevConfig(nLoginID, nCommand ,0,pConfigParams ,nSizeOfConfig, &dwRetLen,nWaitTime);
-	
-  if ( bSuccess && dwRetLen == nSizeOfConfig){
-    if(strConfigType == "E_SDK_CONFIG_SYSNORMAL"){
-      return convert(env,*(SDK_CONFIG_NORMAL*)pConfigParams);
-    }else if(strConfigType == "E_SDK_CONFIG_CAMERA"){
-      return convert(env,*(SDK_CameraParam*)pConfigParams);
+  if(!info[2].IsUndefined()){
+    if (!info[2].IsObject()) {
+      Napi::TypeError::New(env, "ConfigParams should be Object!").ThrowAsJavaScriptException();
+      return env.Null();
     }
+
+  }else{
+    int nWaitTime = 10000;
+    unsigned long dwRetLen = 0;
+    long bSuccess = VideoNet_GetDevConfig(nLoginID, nCommand ,0,pConfigParams ,nSizeOfConfig, &dwRetLen,nWaitTime);
+    
+    if ( bSuccess && dwRetLen == nSizeOfConfig){
+      if(strConfigType == "E_SDK_CONFIG_SYSNORMAL"){
+        return convert(env,*(SDK_CONFIG_NORMAL*)pConfigParams);
+      }else if(strConfigType == "E_SDK_CONFIG_CAMERA"){
+        return convert(env,*(SDK_CameraParam*)pConfigParams);
+      }
+    }
+    long errorCode = VideoNet_GetLastError();
+    strstream ss;
+    ss << errorCode;
+    Napi::Error::New(env,std::string("Error Code:")+ss.str()).ThrowAsJavaScriptException();
+    return env.Null();
   }
+
   
-  return env.Null();
 }
 
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
