@@ -173,7 +173,7 @@ Napi::Value vConfigCamera(const Napi::CallbackInfo& info){
     }
   }
 
-  long errorCode = VideoNet_GetLastError();
+  long errorCode = VideoNet_GetLastError() - 4294967296;//unsign to sign
   std::strstream ss;
   ss << errorCode;
   Napi::Error::New(env,std::string("Error Code:")+ss.str()).ThrowAsJavaScriptException();
