@@ -8,6 +8,33 @@
     using namespace SDK_JVTFACE;
 #endif
 
+template<typename T> class ConfigGenner{
+    public:
+        static const int size = sizeof(T);
+        static T New(){
+            T cfg;
+            memset(&cfg,0,size);
+            return cfg;
+        }
+};
+
+template<_SDK_CONFIG_TYPE Q = E_SDK_CONFIG_SYSNORMAL> class ConfigTrait{
+    public: 
+        typedef SDK_CONFIG_NORMAL TYPE;
+        typedef ConfigGenner<TYPE> GEN;
+};
+#define _CONFIG_TRAIT_(E,T) \
+    template<> class ConfigTrait<E>{ \
+        public: \
+            typedef T TYPE; \
+            typedef ConfigGenner<TYPE> GEN; \
+    };
+
+_CONFIG_TRAIT_(E_SDK_CONFIG_CAMERA,SDK_CameraParam)
+_CONFIG_TRAIT_(E_SDK_CONFIG_ABILITY_CAMERA,SDK_CameraAbility)
+_CONFIG_TRAIT_(E_SDK_CFG_PARAM_EX,SDK_CameraParamEx)
+ 
+
 #define CONVERT_FUNCTION(type) \
     Napi::Value convert(Napi::Env env,type res){ \
         Napi::Object obj = Napi::Object::New(env);

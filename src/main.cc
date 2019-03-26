@@ -91,12 +91,28 @@ Napi::Number vLogout(const Napi::CallbackInfo& info) {
         [<Object> ConfigStruct]
 * output: <Object> ConfigStruct (error:nulll)
 */
-#define SDK_CONFIG_INIT(TYPE,SST) \
-    SST config; \
-    memset(&config,0,sizeof(SST));  \
+#define CASE_CONFIG_TYPE(T) \
+  if(strConfigType == #T){ \
+    auto config = ConfigTrait<T>::GEN::New(); \
     pConfigParams = (char*)&config; \
-    nSizeOfConfig = sizeof(SST); \
-    nCommand = TYPE; 
+    nSizeOfConfig = ConfigTrait<T>::GEN::size; \
+    nCommand = T; \
+  }else 
+#define CASE_CONVERT(T) \
+  if(strConfigType == #T){ \
+    convert(info[2].As<Napi::Object>(),(ConfigTrait<T>::TYPE*)pConfigParams); \
+  }else 
+#define RE_CASE_CONVERT(T) \
+  if(strConfigType == #T){ \
+    return convert(env,*(ConfigTrait<T>::TYPE*)pConfigParams); \
+  }else 
+
+#define END_CASE \
+  { \
+    Napi::TypeError::New(env, "ConfigType not support!").ThrowAsJavaScriptException();\
+    return env.Null();\
+  }
+  
 Napi::Value vConfigCamera(const Napi::CallbackInfo& info){
   Napi::Env env = info.Env();
   if (info.Length() < 1) {
@@ -124,33 +140,23 @@ Napi::Value vConfigCamera(const Napi::CallbackInfo& info){
     strConfigType = info[1].As<Napi::String>();
   }
   //get device config
-  if(strConfigType == "E_SDK_CONFIG_SYSNORMAL"){
-    SDK_CONFIG_INIT(E_SDK_CONFIG_SYSNORMAL,SDK_CONFIG_NORMAL)
-  }else if(strConfigType == "E_SDK_CONFIG_CAMERA"){
-    SDK_CONFIG_INIT(E_SDK_CONFIG_CAMERA,SDK_CameraParam)
-  }else if(strConfigType == "E_SDK_CONFIG_ABILITY_CAMERA"){
-    SDK_CONFIG_INIT(E_SDK_CONFIG_ABILITY_CAMERA,SDK_CameraAbility)
-  }else if(strConfigType == "E_SDK_CFG_PARAM_EX"){
-    SDK_CONFIG_INIT(E_SDK_CFG_PARAM_EX,SDK_CameraParamEx)
-  }else{
-    Napi::TypeError::New(env, "ConfigType not support!").ThrowAsJavaScriptException();
-    return env.Null();
-  }
+  CASE_CONFIG_TYPE(E_SDK_CONFIG_SYSNORMAL)
+  CASE_CONFIG_TYPE(E_SDK_CONFIG_CAMERA)
+  CASE_CONFIG_TYPE(E_SDK_CONFIG_ABILITY_CAMERA)
+  CASE_CONFIG_TYPE(E_SDK_CFG_PARAM_EX)
+  END_CASE
   //set configParams
   if(!info[2].IsUndefined()){
     if (!info[2].IsObject()) {
       Napi::TypeError::New(env, "ConfigParams should be Object!").ThrowAsJavaScriptException();
       return env.Null();
     }
-    if(strConfigType == "E_SDK_CONFIG_SYSNORMAL"){
-        convert(info[2].As<Napi::Object>(),(SDK_CONFIG_NORMAL*)pConfigParams);
-    }else if(strConfigType == "E_SDK_CONFIG_CAMERA"){
-      convert(info[2].As<Napi::Object>(),(SDK_CameraParam*)pConfigParams);
-    }else if(strConfigType == "E_SDK_CONFIG_ABILITY_CAMERA"){
-      convert(info[2].As<Napi::Object>(),(SDK_CameraAbility*)pConfigParams);
-    }else if(strConfigType == "E_SDK_CFG_PARAM_EX"){
-      convert(info[2].As<Napi::Object>(),(SDK_CameraParamEx*)pConfigParams);
-    }
+    //convert js object to c++ struct
+    CASE_CONVERT(E_SDK_CONFIG_SYSNORMAL)
+    CASE_CONVERT(E_SDK_CONFIG_CAMERA)
+    CASE_CONVERT(E_SDK_CONFIG_ABILITY_CAMERA)
+    CASE_CONVERT(E_SDK_CFG_PARAM_EX)
+    END_CASE
     long bSuccess = VideoNet_SetDevConfig(nLoginID,nCommand,-1,pConfigParams,nSizeOfConfig,nWaitTime);
 
     if( bSuccess == 1){
@@ -161,15 +167,12 @@ Napi::Value vConfigCamera(const Napi::CallbackInfo& info){
     long bSuccess = VideoNet_GetDevConfig(nLoginID, nCommand ,-1,pConfigParams ,nSizeOfConfig, &dwRetLen,nWaitTime);
     
     if ( bSuccess == 1 && dwRetLen == nSizeOfConfig){
-      if(strConfigType == "E_SDK_CONFIG_SYSNORMAL"){
-        return convert(env,*(SDK_CONFIG_NORMAL*)pConfigParams);
-      }else if(strConfigType == "E_SDK_CONFIG_CAMERA"){
-        return convert(env,*(SDK_CameraParam*)pConfigParams);
-      }else if(strConfigType == "E_SDK_CONFIG_ABILITY_CAMERA"){
-        return convert(env,*(SDK_CameraAbility*)pConfigParams);
-      }else if(strConfigType == "E_SDK_CFG_PARAM_EX"){
-        return convert(env,*(SDK_CameraParamEx*)pConfigParams);
-      }
+      //convert sdk return to js object
+      RE_CASE_CONVERT(E_SDK_CONFIG_SYSNORMAL)
+      RE_CASE_CONVERT(E_SDK_CONFIG_CAMERA)
+      RE_CASE_CONVERT(E_SDK_CONFIG_ABILITY_CAMERA)
+      RE_CASE_CONVERT(E_SDK_CFG_PARAM_EX)
+      END_CASE
     }
   }
 
