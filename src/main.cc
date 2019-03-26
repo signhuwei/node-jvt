@@ -102,7 +102,7 @@ Napi::Number vLogout(const Napi::CallbackInfo& info) {
   if(strConfigType == #T){ \
     convert(info[2].As<Napi::Object>(),(ConfigTrait<T>::TYPE*)pConfigParams); \
   }else 
-#define RE_CASE_CONVERT(T) \
+#define CASE_RECONVERT(T) \
   if(strConfigType == #T){ \
     return convert(env,*(ConfigTrait<T>::TYPE*)pConfigParams); \
   }else 
@@ -168,10 +168,10 @@ Napi::Value vConfigCamera(const Napi::CallbackInfo& info){
     
     if ( bSuccess == 1 && dwRetLen == nSizeOfConfig){
       //convert sdk return to js object
-      RE_CASE_CONVERT(E_SDK_CONFIG_SYSNORMAL)
-      RE_CASE_CONVERT(E_SDK_CONFIG_CAMERA)
-      RE_CASE_CONVERT(E_SDK_CONFIG_ABILITY_CAMERA)
-      RE_CASE_CONVERT(E_SDK_CFG_PARAM_EX)
+      CASE_RECONVERT(E_SDK_CONFIG_SYSNORMAL)
+      CASE_RECONVERT(E_SDK_CONFIG_CAMERA)
+      CASE_RECONVERT(E_SDK_CONFIG_ABILITY_CAMERA)
+      CASE_RECONVERT(E_SDK_CFG_PARAM_EX)
       END_CASE
     }
   }

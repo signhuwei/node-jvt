@@ -81,12 +81,16 @@ CONVERT_FUNCTION(DSTPoint)
     obj.Set("iMonth",res.iMonth);	        ///<周1:first  to2 3 4 -1:last one   0:表示使用按日计算的方法[-1,4]  
     obj.Set("iWeek",res.iWeek);	            ///<weekday from sunday=0	[0, 6]
     obj.Set("iWeekDay",res.iWeekDay); 
+    obj.Set("Hour",res.Hour); 
+    obj.Set("Minute",res.Minute); 
 CONVERT_RETURN
 RE_CONVERT_FUNCTION(DSTPoint)
     obj->iYear = res.Get("iYear").As<Napi::Number>();
     obj->iMonth = res.Get("iMonth").As<Napi::Number>(); 
     obj->iWeek = res.Get("iWeek").As<Napi::Number>();
     obj->iWeekDay = res.Get("iWeekDay").As<Napi::Number>();
+    obj->Hour = res.Get("Hour").As<Napi::Number>();
+    obj->Minute = res.Get("Minute").As<Napi::Number>();
 RE_CONVERT_RETURN
 
 CONVERT_FUNCTION(SDK_CONFIG_NORMAL)	
@@ -148,11 +152,17 @@ CONVERT_FUNCTION(SDK_ExposureCfg)
     obj.Set("level",res.level);  //曝光等级
     obj.Set("leastTime",res.leastTime);  //自动曝光时间下限或手动曝光时间，单位微秒
     obj.Set("leastTime",res.mostTime);  //自动曝光时间上限，单位微秒
+    #ifdef _WIN32
+    obj.Set("levelTime",res.levelTime); //曝光时间 单位微妙
+    #endif
 CONVERT_RETURN
 RE_CONVERT_FUNCTION(SDK_ExposureCfg)
     obj->level = res.Get("level").As<Napi::Number>();
     obj->leastTime = res.Get("leastTime").As<Napi::Number>();
     obj->mostTime = res.Get("mostTime").As<Napi::Number>();
+    #ifdef _WIN32
+    obj->levelTime = res.Get("levelTime").As<Napi::Number>();
+    #endif
 RE_CONVERT_RETURN
 
 CONVERT_FUNCTION(SDK_GainCfg)
@@ -180,9 +190,14 @@ CONVERT_FUNCTION(SDK_CameraParam)
     obj.Set("dnc_thr",res.dnc_thr);                     //日夜转换阈值
     obj.Set("ae_sensitivity",res.ae_sensitivity);       //ae灵敏度配置
     obj.Set("Day_nfLevel",res.Day_nfLevel);             //noise filter 等级，0-5,0不滤波，1-5 值越大滤波效果越明显
-    obj.Set("Night_nfLevel",res.Night_nfLevel);    //
+    obj.Set("Night_nfLevel",res.Night_nfLevel);
     obj.Set("Ircut_swap",res.Ircut_swap);               //ircut 正常序= 0        反序= 1
+    #ifdef _WIN32
+    obj.Set("BLCValue",res.BLCValue);                   //背光补偿值
+    #endif
+    #ifdef __linux__
     obj.Set("high_light",res.high_light);               //强光抑制功能 0~255,默认是16
+    #endif
 CONVERT_RETURN
 RE_CONVERT_FUNCTION(SDK_CameraParam)
     obj->whiteBalance = res.Get("whiteBalance").As<Napi::Number>();
@@ -204,7 +219,12 @@ RE_CONVERT_FUNCTION(SDK_CameraParam)
     obj->Day_nfLevel = res.Get("Day_nfLevel").As<Napi::Number>();
     obj->Night_nfLevel = res.Get("Night_nfLevel").As<Napi::Number>();
     obj->Ircut_swap = res.Get("Ircut_swap").As<Napi::Number>();
+    #ifdef _WIN32
+    obj->BLCValue = res.Get("BLCValue").As<Napi::Number>();
+    #endif
+    #ifdef __linux__
     obj->high_light = res.Get("high_light").As<Napi::Number>();
+    #endif
 RE_CONVERT_RETURN
 
 
@@ -222,8 +242,10 @@ CONVERT_FUNCTION(SDK_CameraAbility)
     obj.Set("elecLevel",res.elecLevel);     //参考电平值
     obj.Set("luminance",res.luminance);     //平均亮度
     obj.Set("pVersion",res.pVersion);       //xm 2a版本
+    #ifdef __linux__
 	obj.Set("isFishLens",res.isFishLens);   //是否是鱼眼镜头，如果是，则需要app和PC端做图像校正
 	obj.Set("resv1",res.resv1);             //保留，如果增加char型的成员先用这里的
+    #endif
 	obj.Set("reserve",res.reserve);         //保留，如果增加int型的成员用这里
 CONVERT_RETURN
 RE_CONVERT_FUNCTION(SDK_CameraAbility)
@@ -237,15 +259,18 @@ RE_CONVERT_FUNCTION(SDK_CameraAbility)
     obj->luminance = res.Get("luminance").As<Napi::Number>();
 
     COPY_STRING_VALUE(pVersion)
+    #ifdef __linux__
     COPY_STRING_VALUE(isFishLens)
     COPY_STRING_VALUE(resv1)
+    #endif
     COPY_STRING_VALUE(reserve)
 RE_CONVERT_RETURN
 
 
 
 CONVERT_FUNCTION(SDK_CameraParamEx)
-    obj.Set("broadTrends",convert(env,res.broadTrends));       //宽动态                     
+    obj.Set("broadTrends",convert(env,res.broadTrends));       //宽动态  
+    #ifdef __linux__                   
     obj.Set("style",res.style);                                //enum SDK_IMG_TYPE            
     obj.Set("exposureTime",res.exposureTime);                  //实际生效的曝光时间                         
     obj.Set("Dis",res.Dis);                                    //电子防抖设置  0:关闭 1:开启**/        
@@ -254,7 +279,7 @@ CONVERT_FUNCTION(SDK_CameraParamEx)
     obj.Set("LowLuxMode",res.LowLuxMode);                      //微光模式 mode：0 关闭 1开启 ==only imx291                     
     obj.Set("corridor_mode",res.corridor_mode);                //1:走廊模式  0:普通模式                         
     obj.Set("lightRestrainLevel",res.lightRestrainLevel);      // 强光抑制功能0~255，默认16 
-
+    #endif
     Napi::Array ress = Napi::Array::New(env,sizeof(res.res));
     for(int i = 0;i < sizeof(res.res);++i){
         ress.Set(i,res.res[i]);
@@ -263,6 +288,7 @@ CONVERT_FUNCTION(SDK_CameraParamEx)
 CONVERT_RETURN
 RE_CONVERT_FUNCTION(SDK_CameraParamEx)
     COPY_OBJECT_VALUE(broadTrends)
+    #ifdef __linux__
     obj->style = res.Get("style").As<Napi::Number>();
     obj->exposureTime = res.Get("exposureTime").As<Napi::Number>();
     obj->Dis = res.Get("Dis").As<Napi::Number>();
@@ -271,7 +297,7 @@ RE_CONVERT_FUNCTION(SDK_CameraParamEx)
     obj->LowLuxMode = res.Get("LowLuxMode").As<Napi::Number>();
     obj->corridor_mode = res.Get("corridor_mode").As<Napi::Number>();
     obj->lightRestrainLevel = res.Get("lightRestrainLevel").As<Napi::Number>();
-
+    #endif
     Napi::Array ress = res.Get("res").As<Napi::Array>();
     for(int i = 0;i < sizeof(obj->res);++i){
         obj->res[i] = ress.Get(i).As<Napi::Number>();
