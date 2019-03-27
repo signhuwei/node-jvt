@@ -1,5 +1,5 @@
 var jvt = require('bindings')('jvt')
-var [,,IP,username,password,query] = process.argv
+var [,,IP,username,password,query="E_SDK_CONFIG_SYSNORMAL"] = process.argv
 console.log(jvt)
 console.log(jvt.vInit())
 var logID

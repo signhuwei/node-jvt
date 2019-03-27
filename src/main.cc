@@ -157,6 +157,7 @@ Napi::Value vConfigCamera(const Napi::CallbackInfo& info){
     CASE_CONVERT(E_SDK_CONFIG_ABILITY_CAMERA)
     CASE_CONVERT(E_SDK_CFG_PARAM_EX)
     END_CASE
+    
     long bSuccess = VideoNet_SetDevConfig(nLoginID,nCommand,-1,pConfigParams,nSizeOfConfig,nWaitTime);
 
     if( bSuccess == 1){
@@ -178,7 +179,7 @@ Napi::Value vConfigCamera(const Napi::CallbackInfo& info){
 
   long errorCode = VideoNet_GetLastError() - 4294967296;//unsign to sign
   std::strstream ss;
-  ss << errorCode;
+  ss << errorCode << std::endl;
   Napi::Error::New(env,std::string("Error Code:")+ss.str()).ThrowAsJavaScriptException();
   return env.Null();
   
