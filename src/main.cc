@@ -152,6 +152,7 @@ Napi::Value vConfigCamera(const Napi::CallbackInfo& info){
   CASE_CONFIG_TYPE(E_SDK_CONFIG_CAMERA)
   CASE_CONFIG_TYPE(E_SDK_CONFIG_ABILITY_CAMERA)
   CASE_CONFIG_TYPE(E_SDK_CFG_PARAM_EX)
+  CASE_CONFIG_TYPE(E_SDK_CFG_VIDEOCOLOR_CUSTOM)
   END_CASE
   //set configParams
   if(!info[3].IsUndefined()){
@@ -164,6 +165,7 @@ Napi::Value vConfigCamera(const Napi::CallbackInfo& info){
     CASE_CONVERT(E_SDK_CONFIG_CAMERA)
     CASE_CONVERT(E_SDK_CONFIG_ABILITY_CAMERA)
     CASE_CONVERT(E_SDK_CFG_PARAM_EX)
+    CASE_CONVERT(E_SDK_CFG_VIDEOCOLOR_CUSTOM)
     END_CASE
     long bSuccess = VideoNet_SetDevConfig(nLoginID,nCommand,nChannel,pConfigParams,nSizeOfConfig,nWaitTime);
 
@@ -180,6 +182,7 @@ Napi::Value vConfigCamera(const Napi::CallbackInfo& info){
       CASE_RECONVERT(E_SDK_CONFIG_CAMERA)
       CASE_RECONVERT(E_SDK_CONFIG_ABILITY_CAMERA)
       CASE_RECONVERT(E_SDK_CFG_PARAM_EX)
+      CASE_RECONVERT(E_SDK_CFG_VIDEOCOLOR_CUSTOM)
       END_CASE
     }
   }

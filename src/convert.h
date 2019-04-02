@@ -33,6 +33,7 @@ template<_SDK_CONFIG_TYPE Q = E_SDK_CONFIG_SYSNORMAL> class ConfigTrait{
 _CONFIG_TRAIT_(E_SDK_CONFIG_CAMERA,SDK_CameraParam)
 _CONFIG_TRAIT_(E_SDK_CONFIG_ABILITY_CAMERA,SDK_CameraAbility)
 _CONFIG_TRAIT_(E_SDK_CFG_PARAM_EX,SDK_CameraParamEx)
+_CONFIG_TRAIT_(E_SDK_CFG_VIDEOCOLOR_CUSTOM,SDK_VIDEOCOLOR_PARAM_CUSTOM)
  
 
 #define CONVERT_FUNCTION(type) \
@@ -164,12 +165,6 @@ RE_CONVERT_FUNCTION(SDK_ExposureCfg)
     obj->levelTime = res.Get("levelTime").As<Napi::Number>();
     #endif
 RE_CONVERT_RETURN
-
-CONVERT_FUNCTION(SDK_VIDEOCOLOR_PARAM_CUSTOM)
-CONVERT_RETURN
-RE_CONVERT_FUNCTION(SDK_VIDEOCOLOR_PARAM_CUSTOM)
-RE_CONVERT_RETURN
-
 
 CONVERT_FUNCTION(SDK_GainCfg)
     obj.Set("gain",res.gain);//自动增益上限(自动增益启用)或固定增益值
@@ -310,12 +305,52 @@ RE_CONVERT_FUNCTION(SDK_CameraParamEx)
     }
 RE_CONVERT_RETURN
 
-
-
-
-
-
-
-
-
-
+CONVERT_FUNCTION(SDK_VIDEOCOLOR_PARAM_EX)
+    obj.Set("BrightnessRef",res.BrightnessRef);///< 亮度ref1，取值0-100。
+    obj.Set("ContrastRef",res.ContrastRef);///< 对比度ref1，取值0-100。
+    obj.Set("ContrastThRef",res.ContrastThRef);///< 对比度阀值ref1，取值0-100。
+    obj.Set("ContrastSlopeRef",res.ContrastSlopeRef);///< 对比度斜率ref1，取值0-100。
+    obj.Set("DarkBlfRef",res.DarkBlfRef);//
+    obj.Set("DarkNfRef",res.DarkNfRef);//
+    obj.Set("DarkEcPthRef",res.DarkEcPthRef);//
+    obj.Set("DarkEcMthRef",res.DarkEcMthRef);//
+    obj.Set("DarkDcRef",res.DarkDcRef);//
+    obj.Set("CbGain",res.CbGain);///high low middle
+    obj.Set("CrGain",res.CrGain);///higg low middle
+    obj.Set("reserved",res.reserved);///保留
+CONVERT_RETURN
+RE_CONVERT_FUNCTION(SDK_VIDEOCOLOR_PARAM_EX)
+    obj->BrightnessRef = res.Get("BrightnessRef").As<Napi::Number>();
+    obj->ContrastRef = res.Get("ContrastRef").As<Napi::Number>();
+    obj->ContrastThRef = res.Get("ContrastThRef").As<Napi::Number>();
+    obj->ContrastSlopeRef = res.Get("ContrastSlopeRef").As<Napi::Number>();
+    obj->DarkBlfRef = res.Get("DarkBlfRef").As<Napi::Number>();
+    obj->DarkNfRef = res.Get("DarkNfRef").As<Napi::Number>();
+    obj->DarkEcPthRef = res.Get("DarkEcPthRef").As<Napi::Number>();
+    obj->DarkEcMthRef = res.Get("DarkEcMthRef").As<Napi::Number>();
+    obj->DarkDcRef = res.Get("DarkDcRef").As<Napi::Number>();
+    obj->CbGain = res.Get("CbGain").As<Napi::Number>();
+    obj->CrGain = res.Get("CrGain").As<Napi::Number>();
+    obj->reserved = res.Get("reserved").As<Napi::Number>();
+RE_CONVERT_RETURN
+CONVERT_FUNCTION(SDK_VIDEOCOLOR_PARAM_CUSTOM)
+    Napi::Array VideoColor = Napi::Array::New(env,sizeof(res.VideoColor));
+    for(int i = 0;i < sizeof(res.VideoColor);++i){
+        VideoColor.Set(i,convert(env,res.VideoColor[i]));
+    }
+    obj.Set("VideoColor",VideoColor);
+    obj.Set("Saturation",res.Saturation);       ///< 饱和度，取值0-100。
+    obj.Set("Gain",res.Gain);       ///< 增益，取值0-100。bit7置位表示自动增益，其他位被忽
+    obj.Set("Acutance",res.Acutance);       ///< 锐度，取值0-100
+    obj.Set("AeWight",res.AeWight);       //背光补偿
+CONVERT_RETURN
+RE_CONVERT_FUNCTION(SDK_VIDEOCOLOR_PARAM_CUSTOM)
+    Napi::Array VideoColor = res.Get("VideoColor").As<Napi::Array>();
+    for(int i = 0;i < sizeof(obj->VideoColor);++i){
+        convert(VideoColor.Get(i).As<Napi::Object>(),&(obj->VideoColor[i]));
+    }
+    obj->Saturation = res.Get("Saturation").As<Napi::Number>();
+    obj->Gain = res.Get("Gain").As<Napi::Number>();
+    obj->Acutance = res.Get("Acutance").As<Napi::Number>();
+    obj->AeWight = res.Get("AeWight").As<Napi::Number>();
+RE_CONVERT_RETURN

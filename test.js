@@ -10,6 +10,7 @@ console.log(jvt.vConfigCamera(logID,query))
 //console.log(jvt.vConfigCamera(logID,"E_SDK_CONFIG_CAMERA"))
 //console.log(jvt.vConfigCamera(logID,"E_SDK_CONFIG_ABILITY_CAMERA"))
 //console.log(jvt.vConfigCamera(logID,"E_SDK_CFG_PARAM_EX"))
+//console.log(jvt.vConfigCamera(logID,"SDK_VIDEOCOLOR_PARAM_CUSTOM"))
 
 console.log(jvt.vLogout(logID))
 console.log(jvt.vCleanup())
