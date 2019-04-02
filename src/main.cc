@@ -100,7 +100,7 @@ Napi::Number vLogout(const Napi::CallbackInfo& info) {
   }else 
 #define CASE_CONVERT(T) \
   if(strConfigType == #T){ \
-    convert(info[2].As<Napi::Object>(),(ConfigTrait<T>::TYPE*)pConfigParams); \
+    convert(info[3].As<Napi::Object>(),(ConfigTrait<T>::TYPE*)pConfigParams); \
   }else 
 #define CASE_RECONVERT(T) \
   if(strConfigType == #T){ \
@@ -130,14 +130,22 @@ Napi::Value vConfigCamera(const Napi::CallbackInfo& info){
   unsigned long nSizeOfConfig = 0;
   std::string strConfigType = std::string("E_SDK_CONFIG_SYSNORMAL");
   unsigned long nCommand;
-
-  //configType
+  long nChannel = 0;
+    //channel
   if(!info[1].IsUndefined()){
-    if (!info[1].IsString()) {
+    if (!info[1].IsNumber()) {
+      Napi::TypeError::New(env, "ChannelNo should be Number!").ThrowAsJavaScriptException();
+      return env.Null();
+    }
+    nChannel = info[1].As<Napi::Number>();
+  }
+  //configType
+  if(!info[2].IsUndefined()){
+    if (!info[2].IsString()) {
       Napi::TypeError::New(env, "ConfigType should be String!").ThrowAsJavaScriptException();
       return env.Null();
     }
-    strConfigType = info[1].As<Napi::String>();
+    strConfigType = info[2].As<Napi::String>();
   }
   //get device config
   CASE_CONFIG_TYPE(E_SDK_CONFIG_SYSNORMAL)
@@ -146,8 +154,8 @@ Napi::Value vConfigCamera(const Napi::CallbackInfo& info){
   CASE_CONFIG_TYPE(E_SDK_CFG_PARAM_EX)
   END_CASE
   //set configParams
-  if(!info[2].IsUndefined()){
-    if (!info[2].IsObject()) {
+  if(!info[3].IsUndefined()){
+    if (!info[3].IsObject()) {
       Napi::TypeError::New(env, "ConfigParams should be Object!").ThrowAsJavaScriptException();
       return env.Null();
     }
@@ -157,15 +165,14 @@ Napi::Value vConfigCamera(const Napi::CallbackInfo& info){
     CASE_CONVERT(E_SDK_CONFIG_ABILITY_CAMERA)
     CASE_CONVERT(E_SDK_CFG_PARAM_EX)
     END_CASE
-    
-    long bSuccess = VideoNet_SetDevConfig(nLoginID,nCommand,-1,pConfigParams,nSizeOfConfig,nWaitTime);
+    long bSuccess = VideoNet_SetDevConfig(nLoginID,nCommand,nChannel,pConfigParams,nSizeOfConfig,nWaitTime);
 
     if( bSuccess == 1){
-      return info[2];
+      return info[3];
     }
   }else{
     unsigned long dwRetLen = 0;
-    long bSuccess = VideoNet_GetDevConfig(nLoginID, nCommand ,-1,pConfigParams ,nSizeOfConfig, &dwRetLen,nWaitTime);
+    long bSuccess = VideoNet_GetDevConfig(nLoginID, nCommand ,nChannel,pConfigParams ,nSizeOfConfig, &dwRetLen,nWaitTime);
     
     if ( bSuccess == 1 && dwRetLen == nSizeOfConfig){
       //convert sdk return to js object

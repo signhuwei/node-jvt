@@ -165,6 +165,12 @@ RE_CONVERT_FUNCTION(SDK_ExposureCfg)
     #endif
 RE_CONVERT_RETURN
 
+CONVERT_FUNCTION(SDK_VIDEOCOLOR_PARAM_CUSTOM)
+CONVERT_RETURN
+RE_CONVERT_FUNCTION(SDK_VIDEOCOLOR_PARAM_CUSTOM)
+RE_CONVERT_RETURN
+
+
 CONVERT_FUNCTION(SDK_GainCfg)
     obj.Set("gain",res.gain);//自动增益上限(自动增益启用)或固定增益值
     obj.Set("autoGain",res.autoGain);//自动增益是否启用，0:不开启  1:开启
