@@ -1,14 +1,15 @@
 var addonAPI = require('node-addon-api')
+var os = require('os')
 var osMap = {
     "Linux":{
         type:"linux",
         libs:['libjvtsdk.so','libnpcmpimontsp.so'],
         links:['libjvtsdk.so','libnpcmpimontsp.so']
     },
-    "Windowns_NT":{
+    "Windows_NT":{
         type: "win",
-        libs: ['VideoNetAPI.dll','NpcMpiMonTsp.dll'],
-        links: ['VideoNetAPI.lib','NpcMpiMonTsp.lib']
+        libs: ['VideoNetAPI.dll','NpcMpiMonTsp.dll','VideoAnalysisAPI.dll'],
+        links: ['VideoNetAPI.lib','NpcMpiMonTsp.lib','VideoAnalysisAPI.lib']
     },
     "Darwin": {
         type:"linux", //OSX fake to linux

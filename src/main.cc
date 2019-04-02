@@ -137,7 +137,7 @@ Napi::Value vConfigCamera(const Napi::CallbackInfo& info){
       Napi::TypeError::New(env, "ChannelNo should be Number!").ThrowAsJavaScriptException();
       return env.Null();
     }
-    nChannel = info[1].As<Napi::Number>();
+    nChannel = info[1].As<Napi::Number>().Int32Value();
   }
   //configType
   if(!info[2].IsUndefined()){

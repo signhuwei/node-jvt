@@ -34,6 +34,7 @@ _CONFIG_TRAIT_(E_SDK_CONFIG_CAMERA,SDK_CameraParam)
 _CONFIG_TRAIT_(E_SDK_CONFIG_ABILITY_CAMERA,SDK_CameraAbility)
 _CONFIG_TRAIT_(E_SDK_CFG_PARAM_EX,SDK_CameraParamEx)
 _CONFIG_TRAIT_(E_SDK_CFG_VIDEOCOLOR_CUSTOM,SDK_VIDEOCOLOR_PARAM_CUSTOM)
+//_CONFIG_TRAIT_(E_SDK_VIDEOCOLOR,SDK_VideoColorConfigAll)
  
 
 #define CONVERT_FUNCTION(type) \
@@ -281,8 +282,9 @@ CONVERT_FUNCTION(SDK_CameraParamEx)
     obj.Set("corridor_mode",res.corridor_mode);                //1:走廊模式  0:普通模式                         
     obj.Set("lightRestrainLevel",res.lightRestrainLevel);      // 强光抑制功能0~255，默认16 
     #endif
-    Napi::Array ress = Napi::Array::New(env,sizeof(res.res));
-    for(int i = 0;i < sizeof(res.res);++i){
+    int nCount = sizeof(res.res)/sizeof(res.res[0]);
+    Napi::Array ress = Napi::Array::New(env,nCount);
+    for(int i = 0;i < nCount;++i){
         ress.Set(i,res.res[i]);
     }                             
     obj.Set("res",ress);                                    //冗余           
@@ -300,7 +302,7 @@ RE_CONVERT_FUNCTION(SDK_CameraParamEx)
     obj->lightRestrainLevel = res.Get("lightRestrainLevel").As<Napi::Number>();
     #endif
     Napi::Array ress = res.Get("res").As<Napi::Array>();
-    for(int i = 0;i < sizeof(obj->res);++i){
+    for(int i = 0;i < ress.Length();++i){
         obj->res[i] = ress.Get(i).As<Napi::Number>();
     }
 RE_CONVERT_RETURN
@@ -334,8 +336,9 @@ RE_CONVERT_FUNCTION(SDK_VIDEOCOLOR_PARAM_EX)
     obj->reserved = res.Get("reserved").As<Napi::Number>();
 RE_CONVERT_RETURN
 CONVERT_FUNCTION(SDK_VIDEOCOLOR_PARAM_CUSTOM)
-    Napi::Array VideoColor = Napi::Array::New(env,sizeof(res.VideoColor));
-    for(int i = 0;i < sizeof(res.VideoColor);++i){
+    int nCount = sizeof(res.VideoColor)/sizeof(res.VideoColor[0]);
+    Napi::Array VideoColor = Napi::Array::New(env,nCount);
+    for(int i = 0;i < nCount;++i){
         VideoColor.Set(i,convert(env,res.VideoColor[i]));
     }
     obj.Set("VideoColor",VideoColor);
@@ -346,7 +349,7 @@ CONVERT_FUNCTION(SDK_VIDEOCOLOR_PARAM_CUSTOM)
 CONVERT_RETURN
 RE_CONVERT_FUNCTION(SDK_VIDEOCOLOR_PARAM_CUSTOM)
     Napi::Array VideoColor = res.Get("VideoColor").As<Napi::Array>();
-    for(int i = 0;i < sizeof(obj->VideoColor);++i){
+    for(int i = 0;i < VideoColor.Length();++i){
         convert(VideoColor.Get(i).As<Napi::Object>(),&(obj->VideoColor[i]));
     }
     obj->Saturation = res.Get("Saturation").As<Napi::Number>();
