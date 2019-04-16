@@ -7,10 +7,11 @@ console.log(logID = jvt.vLogin(IP,username,password,36123))
 
 let cfg  = jvt.vConfigCamera(logID,parseInt(channel),query);
 function eql(a,b){
+    console.log(a,'=?=',b)
     if(typeof a != 'object'){
         return a == b
     }
-    Object.keys(a).reduce((r,c)=>(r=r&&(a[c]==b[c])),true)
+    return Object.keys(a).reduce((r,c)=>(r=r&&(a[c]==b[c])),true)
 }
 Object.keys(cfg).forEach(key=>{
     if(typeof cfg[key] == 'object') {
