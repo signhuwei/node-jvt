@@ -3,9 +3,14 @@ var [,,IP,username,password,query="E_SDK_CONFIG_SYSNORMAL",channel='0'] = proces
 console.log(jvt)
 console.log(jvt.vInit())
 var logID
-console.log(logID = jvt.vLogin(IP,username,password))
+console.log(logID = jvt.vLogin(IP,username,password,36123))
 
-console.log(jvt.vConfigCamera(logID,parseInt(channel),query))
+var camCfg = jvt.vConfigCamera(logID,parseInt(channel),query);
+console.log('get config:',camCfg)
+//camCfg.whiteBalance = 1;
+jvt.vConfigCamera(logID,parseInt(channel),query,camCfg);
+var after = jvt.vConfigCamera(logID,parseInt(channel),query);
+console.log('after setting:',after)
 //console.log(jvt.vConfigCamera(logID,"E_SDK_CONFIG_SYSNORMAL"))
 //console.log(jvt.vConfigCamera(logID,"E_SDK_CONFIG_CAMERA"))
 //console.log(jvt.vConfigCamera(logID,"E_SDK_CONFIG_ABILITY_CAMERA"))

@@ -1,5 +1,6 @@
 #include <napi.h>
 #include "jvt.h"
+#include <VideoNetAPI.h>
 
 #ifdef __APPLE__//Not support but developing ineed
     using namespace SDK_JVTFACE;
@@ -18,7 +19,7 @@ template<typename T> class ConfigGenner{
         }
 };
 
-template<_SDK_CONFIG_TYPE Q = E_SDK_CONFIG_SYSNORMAL> class ConfigTrait{
+template<SDK_CONFIG_TYPE Q = E_SDK_CONFIG_SYSNORMAL> class ConfigTrait{
     public: 
         typedef SDK_CONFIG_NORMAL TYPE;
         typedef ConfigGenner<TYPE> GEN;
@@ -153,7 +154,7 @@ RE_CONVERT_RETURN
 CONVERT_FUNCTION(SDK_ExposureCfg)
     obj.Set("level",res.level);  //曝光等级
     obj.Set("leastTime",res.leastTime);  //自动曝光时间下限或手动曝光时间，单位微秒
-    obj.Set("leastTime",res.mostTime);  //自动曝光时间上限，单位微秒
+    obj.Set("mostTime",res.mostTime);  //自动曝光时间上限，单位微秒
     #ifdef _WIN32
     obj.Set("levelTime",res.levelTime); //曝光时间 单位微妙
     #endif
@@ -343,9 +344,9 @@ CONVERT_FUNCTION(SDK_VIDEOCOLOR_PARAM_CUSTOM)
     }
     obj.Set("VideoColor",VideoColor);
     obj.Set("Saturation",res.Saturation);       ///< 饱和度，取值0-100。
-    obj.Set("Gain",res.Gain);       ///< 增益，取值0-100。bit7置位表示自动增益，其他位被忽
-    obj.Set("Acutance",res.Acutance);       ///< 锐度，取值0-100
-    obj.Set("AeWight",res.AeWight);       //背光补偿
+    obj.Set("Gain",res.Gain);                   ///< 增益，取值0-100。bit7置位表示自动增益，其他位被忽
+    obj.Set("Acutance",res.Acutance);           ///< 锐度，取值0-100
+    obj.Set("AeWight",res.AeWight);             ///背光补偿
 CONVERT_RETURN
 RE_CONVERT_FUNCTION(SDK_VIDEOCOLOR_PARAM_CUSTOM)
     Napi::Array VideoColor = res.Get("VideoColor").As<Napi::Array>();
