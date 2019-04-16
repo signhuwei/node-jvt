@@ -7,7 +7,6 @@ console.log(logID = jvt.vLogin(IP,username,password,36123))
 
 let cfg  = jvt.vConfigCamera(logID,parseInt(channel),query);
 function eql(a,b){
-    console.log(a,'=?=',b)
     if(typeof a != 'object'){
         return a == b
     }
@@ -26,7 +25,7 @@ Object.keys(cfg).forEach(key=>{
     jvt.vConfigCamera(logID,parseInt(channel),query,cfg)
     let after = jvt.vConfigCamera(logID,parseInt(channel),query)
     console.log(`after set ${query} ${key} ,take back ${typeof after[key] == 'object'? JSON.stringify(after[key]):after[key]} 
-        ${eql(after[key]==cfg[key])&&'============='}`)
+        ${eql(after[key],cfg[key])&&'============='}`)
 })
 //console.log(jvt.vConfigCamera(logID,"E_SDK_CONFIG_SYSNORMAL"))
 //console.log(jvt.vConfigCamera(logID,"E_SDK_CONFIG_CAMERA"))
