@@ -5,12 +5,15 @@ console.log(jvt.vInit())
 var logID
 console.log(logID = jvt.vLogin(IP,username,password,36123))
 
-var camCfg = jvt.vConfigCamera(logID,parseInt(channel),query);
-console.log('get config:',camCfg)
-//camCfg.whiteBalance = 1;
-jvt.vConfigCamera(logID,parseInt(channel),query,camCfg);
-var after = jvt.vConfigCamera(logID,parseInt(channel),query);
-console.log('after setting:',after)
+let cfg  = jvt.vConfigCamera(logID,parseInt(channel),query);
+Object.keys(cfg).forEach(key=>{
+    if(typeof cfg[key] == 'object') return
+    cfg[key] = [cfg[key]+3,cfg[key]+1,cfg[key]+2][~~(3*Math.random())]
+    console.log(`set ${query} ${key} as ${cfg[key]}`)
+    jvt.vConfigCamera(logID,parseInt(channel),query,cfg)
+    let after = jvt.vConfigCamera(logID,parseInt(channel),query)
+    console.log(`after set ${query} ${key} ,take back ${after[key]} ${after[key]==cfg[key]&&'============='}`)
+})
 //console.log(jvt.vConfigCamera(logID,"E_SDK_CONFIG_SYSNORMAL"))
 //console.log(jvt.vConfigCamera(logID,"E_SDK_CONFIG_CAMERA"))
 //console.log(jvt.vConfigCamera(logID,"E_SDK_CONFIG_ABILITY_CAMERA"))
