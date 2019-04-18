@@ -1,6 +1,6 @@
 {
   "name": "node-jvt",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "nodejs control ipc of JVT",
   "main": "index.js",
   "scripts": {
