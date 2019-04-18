@@ -15,3 +15,7 @@ nodejs control ipc of JVT
     npm install --unsafe-perm
     ```
 * Not support OSX
+
+# test
+* >npm install --unsafe-perm
+* >node test.js 192.168.X.X admin admin E_SDK_CONFIG_CAMERA
