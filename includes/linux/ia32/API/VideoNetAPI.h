@@ -1,6 +1,9 @@
 #ifndef _JVT_VIDEO_NET_API_H
 #define _JVT_VIDEO_NET_API_H
 #include <stdio.h>
+#ifdef Android
+#include <android/log.h>
+#endif
 namespace SDK_JVTFACE{
 #define Bool int
 #define WORD	unsigned short
@@ -12,46 +15,76 @@ namespace SDK_JVTFACE{
 #define LONG	long
 #define UINT	unsigned int
 #define LPVOID	void*
+#define LOG_TAG "libjvtsdk"
 #ifndef DBG
+#ifdef Android
+#define DBG(...) __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
+#else
 #define DBG(fmt, args...) do { \
 	 fprintf(stdout, "\033[m""[-DBG-] [%s:%5d] " fmt, (char *)__FILE__,__LINE__,## args);	 \
  } while(0)
 #endif
+#endif
 
 #ifndef SUCCESS_TRACE
+#ifdef Android
+#define SUCCESS_TRACE(...) __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
+#else
 #define SUCCESS_TRACE(fmt, args...) do { \
 	 fprintf(stdout, "\033[1;32m""[SUCCESS_TRACE!] [%s:%5d] " fmt, (char *)__FILE__,__LINE__,## args);	\
  } while(0)
 #endif
+#endif
 
 #ifndef WARNING_TRACE
+#ifdef Android
+#define WARNING_TRACE(...) __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
+#else
 #define WARNING_TRACE(fmt, args...) do { \
 	 fprintf(stdout, "\033[1;33m""[WARNING_TRACE!] [%s:%5d] " fmt, (char *)__FILE__,__LINE__,## args);	\
  } while(0)
 #endif
+#endif
 
 #ifndef BLUE_TRACE
+#ifdef Android
+#define BLUE_TRACE(...) __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
+#else
+
 #define BLUE_TRACE(fmt, args...) do { \
 	 fprintf(stdout, "\033[1;34m""[TRACE!] [%s:%5d] " fmt, (char *)__FILE__,__LINE__,## args);	\
  } while(0)
 #endif
+#endif
 
 #ifndef MAGENTA_TRACE
+#ifdef Android
+#define MAGENTA_TRACE(...) __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
+#else
 #define MAGENTA_TRACE(fmt, args...) do { \
 	 fprintf(stdout, "\033[1;35m""[TRACE!] [%s:%5d] " fmt, (char *)__FILE__,__LINE__,## args);	\
  } while(0)
 #endif
+#endif
 
 #ifndef CYAN_TRACE
+#ifdef Android
+#define CYAN_TRACE(...) __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
+#else
 #define CYAN_TRACE(fmt, args...) do { \
 	 fprintf(stdout, "\033[1;36m""[TRACE!] [%s:%5d] " fmt, (char *)__FILE__,__LINE__,## args);	\
  } while(0)
 #endif
+#endif
 
 #ifndef ERR
+#ifdef Android
+#define ERR(...)   __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
+#else
 #define ERR(fmt, args...) do { \
 	 fprintf(stderr, "\033[1;31m""[ERR!] [%s:%5d] " fmt, (char *)__FILE__,__LINE__,## args);	\
  } while(0)
+#endif
 #endif
 
 #ifdef __cplusplus 
@@ -76,6 +109,7 @@ enum SDK_RET_CODE
 	VIDEONET_DEV_VER_NOMATCH			= -11000,			//收到数据不正确，可能版本不匹配
 	VIDEONET_SDK_NOTSUPPORT				= -11001,			//版本不支持
 	VIDEONET_SDK_FILE_FORAMAT_ERROR		= -11002,			//文件格式 错误
+	VIDEONET_SDK_NETWORK_LOST_PACKET	= -11003,			//前端网络丢包
 
 	VIDEONET_ANAS_EXIST					= -11130,			//NAS地址已存在
 	VIDEONET_ANAS_ALIVE					= -11131,			//路径被使用，无法操作
@@ -221,8 +255,7 @@ typedef enum _SDK_CONFIG_TYPE
 	E_SDK_CONFIG_SYSENCODE_SIMPLIIFY = 68, 	//简化的编码配置---对应结构SDK_EncodeConfigAll_SIMPLIIFY
 	E_SDK_CONFIG_NET_ALARM = 70,		//网络告警---对应结构体SDK_NETALARMCONFIG_ALL																		
 	E_SDK_VIDEO_PREVIEW = 77,				//
-	E_SDK_CONFIG_NET_DECODER_V2,		//解码器地址设置V2(弃用)---对应结构体SDK_NetDecorderConfigAll_V2
-	E_SDK_CONFIG_NET_DECODER_V3,		//解码器地址设置V3---对应结构体SDK_NetDecorderConfigAll_V3
+	E_SDK_CONFIG_NET_DECODER_V3 = 79,		//解码器地址设置V3---对应结构体SDK_NetDecorderConfigAll_V3
 	E_SDK_CONFIG_ABILITY_SERIALNO = 80,	//序列号---对应结构体SDK_AbilitySerialNo(经测试不是设备序列号(暂弃用),序列号可以从登陆接口获取到)
 	E_SDK_CONFIG_NET_RTSP,    			//RTSP---对应结构体SDK_NetRTSPConfig
 	E_SDK_CATCHPIC = 83,               	//抓图												
@@ -307,54 +340,54 @@ typedef enum _SDK_CONFIG_TYPE
 	E_SDK_CFG_APP_DOWN_LINK,		//用于用户定制下载链接---对应结构体SDK_AppDownloadLink
 	E_SDK_CFG_TRANS_COMM_DATA = 188, 		//串口数据主动上传到UDP或TCP服务器，其中TCP服务器可以支持双向通信---对应结构体SDK_NetTransCommData
 	E_SDK_CFG_GSENSORALARM = 193,			//GSENSOR报警
-	E_SDK_CFG_SYSTEMTIME=212,			//设置时间的命令 ,当局域网连接的时候,连接的时候,发送对时命令 --Json接口 "Name":"System.Time"
-	E_SDK_OPERATION_SET_LOGO = 225,	    //视频上叠加厂家的LOGO---对应结构体SDK_SetLogo
-	E_SDK_CFG_IPV6_ADDRESS = 231,			//ipv6------对应的结构体SDK_IPAddressV6
-	E_SDK_CFG_DDNS_IPMSG,         	//DDNS外网IP地址
-	E_SDK_CFG_ONLINE_UPGRADE,		//在线升级相关配置-----对应的结构体SDK_OnlineUpgradeCfg
-	E_SDK_CFG_CONS_SENSOR_ALARM,    //家用产品433报警联动项配置-----对应的SDK_ConsSensorAlarmCfg
-	E_SDK_OPEARTION_SPLIT_CONTROL = 235,  //画面分割模式-----对应的结构体SDK_SplitControl
-	E_SDK_CFG_RECORD_ENABLE = 237,       	//是否准备好开始录像和抓图，现在用于日本客户通过串口控制开启和关闭录像功能
-	E_SDK_CFG_NAS,					//nas配置		//SDK_NAS_LIST
-	E_SDK_OPERATION_UTC_TIME_SETTING = 244,	//设置UTC时间---对应结构体SDK_SYSTEM_TIME
-	E_SDK_CFG_SPVMN_PLATFORM_SIP = 246,			//28181协议配置sip板卡ip-------SDK_SIP_NET_IP_CONFIG
+	E_SDK_CFG_SYSTEMTIME=212,						//设置时间的命令 ,当局域网连接的时候,连接的时候,发送对时命令 --Json接口 "Name":"System.Time"
+	E_SDK_OPERATION_SET_LOGO = 225,	    			//视频上叠加厂家的LOGO---对应结构体SDK_SetLogo
+	E_SDK_CFG_IPV6_ADDRESS = 231,					//ipv6------对应的结构体SDK_IPAddressV6
+	E_SDK_CFG_DDNS_IPMSG,         					//DDNS外网IP地址
+	E_SDK_CFG_ONLINE_UPGRADE,						//在线升级相关配置-----对应的结构体SDK_OnlineUpgradeCfg
+	E_SDK_CFG_CONS_SENSOR_ALARM,    				//家用产品433报警联动项配置-----对应的SDK_ConsSensorAlarmCfg
+	E_SDK_OPEARTION_SPLIT_CONTROL = 235,  			//画面分割模式-----对应的结构体SDK_SplitControl
+	E_SDK_CFG_RECORD_ENABLE = 237,       			//是否准备好开始录像和抓图，现在用于日本客户通过串口控制开启和关闭录像功能
+	E_SDK_CFG_NAS,									//nas配置		//SDK_NAS_LIST
+	E_SDK_OPERATION_UTC_TIME_SETTING = 244,			//设置UTC时间---对应结构体SDK_SYSTEM_TIME
+	E_SDK_CFG_SPVMN_PLATFORM_SIP = 246,				//28181协议配置sip板卡ip-------SDK_SIP_NET_IP_CONFIG
 	E_SDK_CFG_PTZCTRLMODE = 248,					//模拟通道云台控制的控制方式选择-----SDK_PTZControlModeAll
-	E_SDK_CFG_ENCODE_SmartH264,				//SmartH264+配置------SDK_SmartH264ParamAll
-	E_SDK_CFG_WIFI_INFO = 250,					//无线WIFI信息--SDK_WifiInfo
-	E_SDK_CFG_NET_RTMP,						//RTMP协议--SDK_NetRTMPConfig
-	E_SDK_CFG_SNAP_SCHEDULE,				//定时抓图配置--SDK_SnapConfigAll
-	E_SDK_OPERATION_SET_LANGUAGE,			//设置一种语言
-	E_SDK_CFG_PTZPRESET,					//预置点配置--SDK_PtzPreset
+	E_SDK_CFG_ENCODE_SmartH264,						//SmartH264+配置------SDK_SmartH264ParamAll
+	E_SDK_CFG_WIFI_INFO = 250,						//无线WIFI信息--SDK_WifiInfo
+	E_SDK_CFG_NET_RTMP,								//RTMP协议--SDK_NetRTMPConfig
+	E_SDK_CFG_SNAP_SCHEDULE,						//定时抓图配置--SDK_SnapConfigAll
+	E_SDK_OPERATION_SET_LANGUAGE,					//设置一种语言
+	E_SDK_CFG_PTZPRESET,							//预置点配置--SDK_PtzPreset
 	E_SDK_CFG_PTZTOUR = 255,						//巡航配置--SDK_PtzTour
 	E_SDK_CFG_BREVIARY = 259,						//缩略图配置
 	E_SDK_CFG_SERIALPORT_ALARM = 260,				//串口报警配置--SDK_SerialPortAlarm
-	E_SDK_OPEARTION_SET_LEARN_CODE,			//支持串口报警设置才能设置学码--SDK_AMIRLearnCode
-	E_SDK_OPERATION_TIME_SETTING_NEW_WAY = 264,	//设置系统时间（想关掉时间同步的程序可以用这个命令，并禁用之前的时间设置命令）
-	E_SDK_OPERATION_UTC_TIME_SETTING_NEW_WAY,//设置UTC时间（用于其他协议设置UTC时间）
-	E_SDK_CFG_DDNSADDRINFO,					//DDNS状态信息
+	E_SDK_OPEARTION_SET_LEARN_CODE,					//支持串口报警设置才能设置学码--SDK_AMIRLearnCode
+	E_SDK_OPERATION_TIME_SETTING_NEW_WAY = 264,		//设置系统时间（想关掉时间同步的程序可以用这个命令，并禁用之前的时间设置命令）
+	E_SDK_OPERATION_UTC_TIME_SETTING_NEW_WAY,		//设置UTC时间（用于其他协议设置UTC时间）
+	E_SDK_CFG_DDNSADDRINFO,							//DDNS状态信息
 	E_SDK_CFG_INTEL_ENCODE = 269,					//智能编码--SDK_IntelEnCodeCfgAll
 	E_SDK_CFG_PLATE_DETECT_WHITE_LIST = 270,		//车牌识别白名单--SDK_PlateDetectWhiteList
-	E_SDK_OPERATION_PLATE_DETECT_LIFT,		//车牌侦测抬杆--SDK_PlateDetectLiftBar
-	E_SDK_CFG_ALARM_PLATE_DETECT,			//车牌侦测报警--SDK_PlateDetectAll
-	E_SDK_CFG_ALARM_FACE_DETECT,			//人脸识别报警--SDK_FaceDetectAll
-	E_SDK_CFG_NET_IPADAPTIVE = 274,				//ip自适应网关功能使能配置--SDK_IPAdaptiveCfg
-	E_SDK_CFG_OEM_GETINFO,					//客户定制获取系统信息--SDK_OemGetInfo
-	E_SDK_CFG_433_ALARM_DEV,				//客户定制433报警配置--SDK_ConsumerAlarm433DevList
-	E_SDK_CFG_NET_ONVIF_PWD_CHECKOUT,		//onvif 密码校验--SDK_IpcOnvifPwdCheckout
-	E_SDK_CFG_BALL_CAMERA_TRACK_DETECT,		//球机跟踪识别配置--SDK_BallCameraTrackDetectParamAll
+	E_SDK_OPERATION_PLATE_DETECT_LIFT,				//车牌侦测抬杆--SDK_PlateDetectLiftBar
+	E_SDK_CFG_ALARM_PLATE_DETECT,					//车牌侦测报警--SDK_PlateDetectAll
+	E_SDK_CFG_ALARM_FACE_DETECT,					//人脸识别报警--SDK_FaceDetectAll
+	E_SDK_CFG_NET_IPADAPTIVE = 274,					//ip自适应网关功能使能配置--SDK_IPAdaptiveCfg
+	E_SDK_CFG_OEM_GETINFO,							//客户定制获取系统信息--SDK_OemGetInfo
+	E_SDK_CFG_433_ALARM_DEV,						//客户定制433报警配置--SDK_ConsumerAlarm433DevList
+	E_SDK_CFG_NET_ONVIF_PWD_CHECKOUT,				//onvif 密码校验--SDK_IpcOnvifPwdCheckout
+	E_SDK_CFG_BALL_CAMERA_TRACK_DETECT,				//球机跟踪识别配置--SDK_BallCameraTrackDetectParamAll
 	E_SDK_CFG_CAMERA_SPECIAL_NIGHT = 279,			//夜晚情景特殊模式--SDK_CameraSpecialNightCtrl
 
-	E_SDK_CFG_SMARTDETECTION_CODEC = 294,			//智能编码		by  20170911
-	E_SDK_CFG_SMARTDETECTION_DETECT,		//智能检测		by  20170911
-	E_SDK_CFG_SMARTDETECTION_CONTROL,		//智能控制		by  20170911
-	E_SDK_CFG_SMARTDETECTION_LUMINANCE,		//亮度侦测		by  20170908
-	E_SDK_CFG_SMARTDETECTION_MOVE,			//移动侦测		by  20170908
-	E_SDK_CFG_SMARTDETECTION_OCCLUSION,		//遮挡侦测		by  20170908
-	E_SDK_CFG_SMARTDETECTION_CROSSLINE = 300,		//虚拟警戒线	by  20170908
-	E_SDK_CFG_SMARTDETECTION_CROSSAREA,		//区域入侵		by  20170908
-	E_SDK_CFG_SMARTDETECTION_COLOR,			//颜色			by  20170908
-	E_SDK_CFG_SMARTDETECTION_SOUND,			//声音			by  20170908
-	E_SDK_CFG_SMARTDETECTION_LOSEOBJ,		//物品预留		by  20170908
+	E_SDK_CFG_SMARTDETECTION_CODEC = 294,			//智能编码
+	E_SDK_CFG_SMARTDETECTION_DETECT,				//智能检测
+	E_SDK_CFG_SMARTDETECTION_CONTROL,				//智能控制
+	E_SDK_CFG_SMARTDETECTION_LUMINANCE,				//亮度侦测
+	E_SDK_CFG_SMARTDETECTION_MOVE,					//移动侦测
+	E_SDK_CFG_SMARTDETECTION_OCCLUSION,				//遮挡侦测
+	E_SDK_CFG_SMARTDETECTION_CROSSLINE = 300,		//虚拟警戒线
+	E_SDK_CFG_SMARTDETECTION_CROSSAREA,				//区域入侵
+	E_SDK_CFG_SMARTDETECTION_COLOR,					//颜色
+	E_SDK_CFG_SMARTDETECTION_SOUND,					//声音
+	E_SDK_CFG_SMARTDETECTION_LOSEOBJ,				//物品预留
 	
 
 	E_SDK_CFG_CALIBRATION_GET_CAMERA_PARAMETER,			//获取摄像机是否已经标定	
@@ -362,14 +395,22 @@ typedef enum _SDK_CONFIG_TYPE
 	E_SDK_CFG_CALIBRATION_SET_POINTS,					//设置标定坐标(增、删，3D)
 	E_SDK_CFG_CALIBRATION_ACTION,						//设置标定（开始、完成）
 	E_SDK_CFG_CALIBRATION_MODE,							//标定模式
-	E_SDK_CFG_CALIBRATION_ZOOMTIMES = 310,					//变倍系数
+	E_SDK_CFG_CALIBRATION_ZOOMTIMES = 310,				//变倍系数
 	E_SDK_CFG_CALIBRATION_PTZINFO,						//PTZ参数
 
-	E_SDK_CFG_FACECOMPARE_RESULT_ALARM, 	//对比结果报警	 SDK_FA_FACECOMPARE_RESULT_ALARM					
-	E_SDK_CFG_SMARTFACE_COMMON_PARAMETER,	//人脸识别参数	  SDK_FA_SMART_FACE				
-	E_SDK_CFG_SMARTFACE_AREADETECTION,		//人脸识别侦测区域	SDK_FA_VI_DECTECT			
-	E_SDK_CFG_SMARTFACE_VERSION,			//识别算法版本号	SDK_FA_ALGORITHM_Version			
-	E_SDK_CFG_SMARTFACE_ALARM,				//人脸报警参数	SDK_SMART_ALARM				
+	E_SDK_CFG_CALIBRATION_NAMING,						//点名球设置获取 barney 20190320
+
+	E_SDK_CFG_FACECOMPARE_RESULT_ALARM, 	//对比结果报警-----对应结构体	 SDK_FA_FACECOMPARE_RESULT_ALARM					
+	E_SDK_CFG_SMARTFACE_COMMON_PARAMETER,	//人脸识别参数	  -----对应结构体SDK_FA_SMART_FACE				
+	E_SDK_CFG_SMARTFACE_AREADETECTION,		//人脸识别侦测区域-----对应结构体SDK_FA_VI_DECTECT			
+	E_SDK_CFG_SMARTFACE_AREASHIELDED,		//人脸区域屏蔽
+	E_SDK_CFG_SMARTFACE_VERSION,			//识别算法版本号-----对应结构体SDK_FA_ALGORITHM_Version			
+	E_SDK_CFG_SMARTFACE_ALARM,				//人脸报警参数-----对应结构体SDK_SMART_ALARM
+
+	E_SDK_CFG_SMARTFACE_COUNT,				//人脸统计参数-----对应结构体SDK_FA_SMART_FACE_COUNT
+	E_SDK_CFG_EMMCINFO,						//EMMC参数-----对应结构体SDK_EMMC_MODEL_INFO
+	E_SDK_CFG_AWBAUTO_MODE,					//白平衡设置-----对应结构体SDK_AWBAUTO_MODE
+	E_SDK_CFG_SMART_CAR,					//车牌抓拍参数配置-----对应结构体SDK_SMART_CAR_S
 	
 }SDK_CONFIG_TYPE;
 
@@ -470,8 +511,6 @@ enum SDK_PtzAuxStatus
 
 //摄象机参数
 #define CAMERAPARA_MAXNUM           16    		//曝光能力中目前最大长度
-//短信最大数量
-#define NET_MAX_RECIVE_MSG_PHONE_COUNT 3		///<最大发生短信数量
 
 //VGA分辨率
 #define VGA_MAXNUM        32       				//分辨率 种类
@@ -1345,21 +1384,6 @@ typedef struct SDK_NetDecoderConfigAll
     SDK_NetDecoderConfig vNetDecoderConfig[NET_MAX_DECORDR_CH];
 }SDK_NetDecoderConfigAll;
 
-
-/// 解码器地址设置V2版本
-typedef struct SDK_NetDecoderConfig_V2
-{
-    int nTotalNum;            //有效的数组个数，最大为NET_MAX_CHANNUM
-    SDK_NetDecoderConfig vNetDecoderConfig[NET_MAX_CHANNUM];
-}SDK_NetDecoderConfig_V2;
-
-/// 所有通道的解码器地址设置V2版本
-typedef struct SDK_NetDecoderConfigAll_V2
-{
-    SDK_NetDecoderConfig_V2 vNetDecoderArray[NET_MAX_DECORDR_CH];
-}SDK_NetDecoderConfigAll_V2;
-
-
 /// 捕获通道类型
 enum SDK_CaptureChannelTypes 
 {
@@ -2189,7 +2213,8 @@ typedef struct _VIDEONET_DEVICEINFO
 {
     char sSoftWareVersion[64];	///< 软件版本信息
     char sHardWareVersion[64];	///< 硬件版本信息
-    char sEncryptVersion[64];	///< 加密版本信息
+    //char sEncryptVersion[64];	///< 加密版本信息
+    char sWebVersion[64];		///< 页面版本信息
     SDK_SYSTEM_TIME tmBuildTime;///< 软件创建时间
     char sSerialNumber[64];		///< 设备序列号
     int byChanNum;				///< 视频输入通道数
@@ -2201,14 +2226,16 @@ typedef struct _VIDEONET_DEVICEINFO
     int iExtraChannel;			///< 扩展通道数
     int iAudioInChannel;		///< 音频输入通道数
     int iCombineSwitch;			///< 组合编码通道分割模式是否支持切换
-    int iDigChannel;			///<数字通道数
+    int iDigChannel;			///< 数字通道数
     unsigned int uiDeviceRunTime;///<系统运行时间
-    SDK_DeviceType deviceTye;	///设备类型
-    char sHardWare[64];			///<设备型号
-    char uUpdataTime[20];		///<更新日期 例如 2018-09-03 16:26:56
-    unsigned int uUpdataType;	///<更新内容
-	char sDeviceModel[16];       //设备型号(底层库从加密里获得，sHardWare针对多个设备用同一个程序这种情况区分不了) 
-	int nLanguage;//国家的语言ID,0英语 1中文 2中文繁体 3韩语 4德语 5葡萄牙语 6俄语
+    SDK_DeviceType deviceTye;	///< 设备类型
+    char sHardWare[64];			///< 设备型号
+    char uUpdataTime[20];		///< 更新日期 例如 2018-09-03 16:26:56
+    unsigned int uUpdataType;	///< 更新内容
+	char sDeviceModel[16];      ///< 设备型号(底层库从加密里获得，sHardWare针对多个设备用同一个程序这种情况区分不了) 
+	int nLanguage;				///< 国家的语言ID,0英语 1中文 2中文繁体 3韩语 4德语 5葡萄牙语 6俄语
+	char szOnvifModel[32]; 		///< 获取onvif的model
+	char res[128];
 }VIDEONET_DEVICEINFO,*LPVIDEONET_DEVICEINFO;
 
 //主动服务回调数据
@@ -2218,6 +2245,7 @@ typedef struct VIDEONET_ACTIVEREG_INFO
     VIDEONET_DEVICEINFO deviceInfo;	//设备信息
     char IP[IP_SIZE];   			//外网IP
 }VIDEONET_ACTIVEREG_INFO;
+
 ///< 自动维护设置
 typedef struct SDK_AutoMaintainConfig
 {
@@ -2279,7 +2307,11 @@ enum SDK_File_Type
     SDK_PIC_REGULAR,      //普通图片
     SDK_PIC_MANUAL,       //手动图片
     SDK_PIC_IDXIMG,		  //索引图片
-    SDK_TYPE_NUM
+    SDK_TYPE_NUM,
+    SDK_PIC_FACE = 20,		//人脸搜索图片
+	SDK_PIC_CARNO,			//车牌
+	SDK_PIC_WIFI,
+	SDK_FACE_QUERY_RECORD,  //人脸搜索录像
 };
 
 //查询录像条件
@@ -2315,6 +2347,35 @@ typedef struct VIDEONET_FILE_DATA
         StreamType =0;
     };
 }VIDEONET_FILE_DATA;
+
+//图片查询条件
+typedef struct PICTURE_FINDINFO
+{
+	int              lChannel;				//通道号:掩码的方式
+	int				 sorttype;				//排序方式 0按相似度排序  1按时间排序(从小到大)   2按时间排序(从大到小)
+	int              byFileType;			//查找图片类型：见SDK_File_Type 20-人脸，21-车牌，22-探针信息，0xff-全部类型
+	float			 similarity;			//相似度
+	SDK_SYSTEM_TIME  startTime;				//查找图片的开始时间
+	SDK_SYSTEM_TIME  endTime;				//查找图片的结束时间
+	char			 filepath[128];			//图片完整路径(包含文件名)
+}*LPPICTURE_FINDINFO;
+
+typedef struct PICTURE_DATA
+{
+	short			 index;
+	short			 channel;				//图片或者录像所属通道号
+	int              size;					//图片大小或者录像时间
+	float			 similarity;			//相似度
+	SDK_SYSTEM_TIME  capturetime;			//图片抓拍时间或者录像开始时间
+	char			 filepath[128];			//图片或录像完整路径(包含文件名)
+}*LPPICTURE_DATA;
+
+//图片查询返回
+typedef struct VIDEONET_PICTURE_DATA
+{
+	int              photonum;				//图片数目
+	PICTURE_DATA	 photodata[5000];			
+}*LPVIDEONET_PICTURE_DATA;
 
 //回放动作
 enum SDK_PlayBackAction
@@ -3790,18 +3851,24 @@ typedef struct SDK_FA_PICTURE_HEAD_S
 /*人脸属性检测*/
 typedef struct _FACE_ATTRIBUTE_S
 {
-	char byAge;      	//年龄 
-	char byGender;	//性别
-	char byGlasses; 	//眼镜  
-	char byMask; 	//面具
-	char byRace;		//种族  
-	char byEye;		//眼睛 
-	char byMouth;	//嘴巴
-	char byBeard;	//胡子  
-	char byEmotion;	//表情 
-	char byAttractive; //魅力
-	char bySmile;      //笑脸
-	char byRes[21];
+	char byAge;      		//年龄 [0, )
+	char byGender;			//性别 -1 未知, 1 男, 2 女
+	char byGlasses; 		//眼镜   -1 未知, 0 不戴眼镜, 1 戴眼镜, 2 戴墨镜
+	char byMask; 			//口罩 -1 未知, 0 不戴口罩, 1 戴口罩
+	char byRace;			//种族   -1 未知, 1 黄种人, 2 黑种人, 3 白种人
+	char byEye;				//眼睛 -1 未知, 0 闭合, 1 睁开
+	char byMouth;			//嘴巴 -1 未知, 0 闭合, 1 张开
+	char byBeard;			//胡子   -1 未知, 0 无胡子, 1 有胡子
+	char byEmotion;			//表情   -1 未知, 1 生气, 2 平静, 3 高兴, 4 悲伤, 5 惊讶, 6 害怕, 7 厌恶, 8 斜视, 9 尖叫
+	char byAttractive; 		//魅力 [0， ）
+	char bySmile;      		//笑脸 -1 未知, 0 微笑, 1 平静
+	char bySunglass; 		//墨镜 -1 未知, 0 不戴墨镜, 1 戴墨镜
+	char byHat; 			//带帽 -1 未知, 0 不戴帽子, 1 戴帽子
+	char byIsCalling; 		//打电话 -1 未知, 0 没打电话, 1 在打电话
+	char byUpperbodyColor; 	//上衣颜色 -1 未知, 0 黑色, 1 白色, 2 灰色, 3 红色, 4 蓝色, 5 黄色, 6 橘色, 7 棕色, 8 绿色, 9 紫色, 10 青色, 11 粉红色, 12 条纹, 13 格子, 14 图案
+	char byUpperbodyStyle; 	//上衣款式 -1 未知, 0 背心, 1 T 恤, 2 衬衫, 3 罩衫, 4 连衣裙, 5 卫衣, 6 夹克, 7 针织毛衣, 8 西装, 9 马甲, 10 大衣, 11 羽绒服, 12 牛仔服
+	char byHairStyle; 		//发型 -1 未知, 0 光头, 1 秃头, 2 平头, 3 短发, 4 及肩短发, 5 披肩发, 6 束发
+	char byRes[15]; 		//预留字节
 }FACE_ATTRIBUTE_S;
 
 //人脸图片尺寸
@@ -3822,6 +3889,47 @@ typedef struct _FACE_POSITION_S
 	int bottom;
 }FACE_POSITION_S;
 
+//160bytes
+typedef struct _SMART_CAR_INFO_XM_S
+{
+	char szCarPlateNum[16];	//车牌号
+	char szCarLogName[20];      //主品牌
+	char szCarSubLogName[20];   //子品牌
+	int  nCarColor;				//车身颜色	
+	char byRes[100];
+}SMART_CAR_INFO_XM_S;
+
+//车牌抓拍参数：
+/*************车牌配置参数512bytes****************/
+typedef struct _SDK_SMART_CAR_S
+{	
+	char				byCarDetectEnable;	//算法使能开关(1开，0关)
+	char				byFTPEnable;		//FTP传输(1开，0关)
+	char				byPicMode;			//大小图(0场景图，1车牌图片，2场景图加车牌图)
+	char  				bySameCarIntervel;	//相同车牌抓拍间隔(秒)（1~255）
+	char  				bySnapMode;			//抓拍模式:线圈、区域、地感（不支持）
+	char  				byDetectAspect; 	//抓拍方向（安装环境） 1:由上至下（入口） 2:由下至上（出口） 3:双向（卡口）
+	short 				nMinSize;			//最小识别宽度（像素）
+	short 				nMaxSize;			//最大识别宽度（像素）
+	short 				nLocalProvince;		//默认省份（不支持）
+	SDK_SCHWEEK_TIME  	stCarSchTime;		//布放时间336bytes（不支持）
+	char				byBigPicQuality;	//大图质量（0~99）
+	char				byLittlePicQuality;	//小图质量（0~99）
+	char  				byThreshold;		//抓拍阈值（不支持）
+	char 				byRes[161];				
+}SDK_SMART_CAR_S;
+
+
+//160bytes
+typedef struct _SMART_WIFIPROBE_INFO_XM_S
+{
+	int   nSignalIntensity;		//wifi信号强度
+	int	  nChannel;				//信道
+	char szPhoneWifiMac[20];	//手机MAC
+	char szRouteMac[20];		//路由MAC
+	char byRes[112];
+}SMART_WIFIPROBE_INFO_XM_S;
+
 
 //图片属性3072字节
 typedef struct _SDK_FACE_ATTR_S
@@ -3840,7 +3948,11 @@ typedef struct _SDK_FACE_ATTR_S
 	char stFaceTime[32];			//抓拍时间
 	char stDevUUID[32];				//设备UUID,用HK ID
 	char stOsd[64];					//OSD信息
-	char stContent[160];			//用于存放车牌或者wifi探针信息
+	//char stContent[160];			//用于存放车牌或者wifi探针信息
+	union{
+		SMART_CAR_INFO_XM_S stCarInfo;		//车牌信息
+		SMART_WIFIPROBE_INFO_XM_S stWifiProbeInfo;//wifi探针信息
+	};
 	
 	int  nFeatureType;				//特征值类型:0 float, 1 char ,2 int
 	int  nFeatureLen;				//结合nFeatureType类型，特征值数组长度
@@ -3849,8 +3961,10 @@ typedef struct _SDK_FACE_ATTR_S
 		char	cFeature[2048];
 		int		nFeature[512];
 	}facefeature;
-	
-	char sRes[632];					//预留
+
+	char stFaceUTCTime[32];
+	char byHasFaceAttr; //是否带人脸属性信息
+	char sRes[599]; //预留
 
 }SDK_FACE_ATTR;
 
@@ -3872,6 +3986,16 @@ typedef struct SDK_FA_BLACKANDWHITELIST_CONFIG_S
 	int					 byDataType;		//特征值类型  0 float,1 char ,2 int
 	unsigned char		 byRes[28];
 }SDK_FA_BLACKANDWHITELIST_CONFIG;
+
+//人脸私有协议上传
+typedef struct SDK_FA_FS_PROTOCOL_S
+{
+	char szUDPaddr[64];	//服务器IP
+	DWORD dwUDPport;	//服务器端口号
+	BYTE nUDPSDKEnable; //私有协议上传使能开关
+	BYTE szRes[3];		//保留
+	BYTE byRes[64];		//保留
+}SDK_FA_FS_PROTOCOL;
 
 
 //人脸识别参数
@@ -3900,15 +4024,19 @@ typedef struct  SDK_FA_SMART_FACE_S
 	BYTE 		byIntervalSnapNum; //抓拍次数------间隔抓拍模式
 	WORD 		wMaxFaceSize; //人脸识别最大像素
 	int 		nGateIntervalFrame; //间隔帧数----闸机模式
-	BYTE 		byRes[16]; //保留字节
+	int			nFaceQuality;			//人脸质量分数 
+	BYTE 		byTimeOsdEnable;		//原图叠加时间戳OSD (0关闭，1开启)
+	BYTE		byFacePicDPI;			//人脸图片源分辨率(0 4K, 1 1080P)
+	BYTE		byFramePicDPI;			//场景图分辨率(0 4K, 1 1080P)	
+	BYTE 		byResendEnable;			//EMMC断网续传（0关闭，1开启）
+	BYTE 		byRes[8]; //保留字节
 }SDK_FA_SMART_FACE;
-
-
 
 typedef struct  SDK_FA_SNAP_FACE_CONFIG_S   
 {
 	SDK_SCHWEEK_TIME	aTime;			//布防时间
 	SDK_FA_SMART_FACE   sSmartFace;  
+	SDK_FA_FS_PROTOCOL stFsProtocols;
 }SDK_FA_SNAP_FACE_CONFIG;
 
 
@@ -3919,14 +4047,6 @@ typedef struct SDK_FA_VI_DECTECT_S
 	SDK_AREA_RECT		stFaceMaskArea;
 	BYTE				byRes[32];
 }SDK_FA_VI_DECTECT;
-
-typedef struct SDK_FA_ALGORITHM_Version_S
-{
-	char 		BaseVersion[64];	
-	char 		ModeVersion[64];	
-	BYTE				byRes[32];
-}SDK_FA_ALGORITHM_Version;
-
 
 //人脸报警   384字节
 typedef struct SDK_SMART_ALARM_S
@@ -3941,6 +4061,28 @@ typedef struct SDK_SMART_ALARM_S
 	SDK_SCHWEEK_TIME	aTime;			//布防时间
 	BYTE		 	byRes[40];		
 }SDK_SMART_ALARM;
+
+
+//人脸算法版本信息
+typedef struct SDK_FA_SMART_VERSION_INFO_S
+{
+	char szLib_version[16] ;    //算法库版本
+	char szModel_version[16];	//模型版本
+	BYTE  nbyLic;				//保留				
+	BYTE  byRes[7];				//保留
+}SDK_FA_SMART_VERSION_INFO;
+
+typedef struct SDK_FA_SMART_FACE_COUNT_S
+{
+	int				nEnable;      		//人脸统计 开启/关闭
+	int 			nTotalClear;		//人脸统计值 清零
+	long			lBeginTime;
+	long			lEndTime;
+	int				nFaceTotleNum;
+	int 			nFaceTotal;			//人脸统计值
+	int 			nPerSecFaceNum; 	//单位时间统计人脸数量
+	char 			byRes[232];
+}SDK_FA_SMART_FACE_COUNT;
 
 //=========================================================================
 
@@ -4078,6 +4220,50 @@ typedef struct SDK_FACECOMPARE_RESULT_S
 	float			facecharacter[128];
 }SDK_FACECOMPARE_RESULT;  
 
+typedef struct SDK_EMMC_MODEL_INFO_S
+{
+	unsigned int  nTotalSize;	//总空间(单位:M)
+	unsigned int  nFreeSize;	//剩余可用空间	(单位:M)
+	BYTE byIsInit;				//格式化状态(0:未格式化 1:已经格式化)
+	BYTE byEmmcFormatFlag;		//格式化标志位(赋值1时将重新格式化EMMC模块)
+	BYTE byRes[54];	
+}SDK_EMMC_MODEL_INFO;
+
+
+//白平衡模式
+typedef struct SDK_AWBAUTO_MODE_S
+{
+	DWORD dwAwbMode;	//白平衡模式
+	DWORD dwAutoAwb;	//白平衡	0自动, 1 手动 
+	DWORD dwAwBblue;	//白平衡	蓝  0~255
+	DWORD dwAwBRed;		//白平衡	红  0~255
+	DWORD dwAwBGreen;	//白平衡	绿	 0~255
+}SDK_AWBAUTO_MODE;
+
+
+typedef struct SDK_MS_NAMING_S 
+{
+#define CMD_NAMING_SET_PARAM   		0x1  //标定区域  			param: nData[1-4]
+#define CMD_NAMING_SET_ZOOM    		0x2  //设置倍率 			param: nData
+#define CMD_NAMING_SET_SCANMODE		0x3  //设置扫描模式     		param: nData    
+#define CMD_NAMING_SET_SCANTIMES	0X4  //扫描开始后扫描n次后停止 	param: nData[1-4]  
+
+#define CMD_NAMING_SCAN_START   	0x20   //扫描开始 
+#define CMD_NAMING_SCAN_STOP    	0x21   //扫描手动停止
+
+	int nCmd;
+	int nData;		//[1,4]
+	char byRes[128];
+}SDK_MS_NAMING;
+
+//新增获取参数
+typedef struct SDK_GET_NAMING_PARAM_S 
+{
+	char byEnable; //0:  1：功能可用
+	char byCalibrate;//0:未标定  1:已标定存在轨迹或标定区域点名可用。
+	char byDomeState; //球机空闲状态0：空闲 1：球机点名中 2：轨迹学习中/标定
+	char byRes[128];//
+}SDK_GET_NAMING_PARAM;
 
 //==========================================================================
 
@@ -4090,7 +4276,7 @@ typedef void (*fUploadDataCallBack) (long lLoginID, long UploadType, char *pBuff
 // 透明串口回调函数原形
 typedef void (*fTransComCallBack) (long lLoginID, long lTransComType, char *pBuffer, unsigned long dwBufSize, unsigned long dwUser);
 //服务器断开回调原形
-typedef void (*fDisConnect)(long lLoginID, char *pchDVRIP, long nDVRPort, unsigned long dwUser);
+typedef void (*fDisConnect)(long lLoginID, char *pchDVRIP, long nDVRPort,long dwUser);
 //原始数据回调原形
 typedef int(*fRealDataCallBack) (long lRealHandle, long dwDataType, unsigned char *pBuffer,long lbufsize,long dwUser);
 typedef int(*fRealDataCallBack_V2) (long lRealHandle, const PACKET_INFO_EX *pFrame, long dwUser);
@@ -4122,13 +4308,11 @@ typedef bool (*fMessCallBack)(long lLoginID, char *pBuf, unsigned long dwBufLen,
 	其他就是发送进度
 	云升级增加了这一步:nTotalSize=-2时，nSendSize:0 - 100=下载进度,没有发送进度
 */
-typedef void(*fUpgradeCallBack) (long lLoginID, long lUpgradechannel,
-                                             int nTotalSize, int nSendSize, long dwUser);
+typedef void(*fUpgradeCallBack) (long lLoginID, long lUpgradechannel,int nTotalSize, int nSendSize, long dwUser);
 
 
 // 语音对讲的音频数据回调函数原形
-typedef void (*pfAudioDataCallBack)(long lVoiceHandle, char *pDataBuf,
-                                                long dwBufSize, char byAudioFlag, long dwUser);
+typedef void (*pfAudioDataCallBack)(long lVoiceHandle, char *pDataBuf,long dwBufSize, char byAudioFlag, long dwUser);
 
 
 //本地播放结束回调原形
@@ -4165,7 +4349,7 @@ typedef int(*fFaceBlackAndWhiteListCallBack) (long lSubFaceHandle, char *pBuffer
 		=1: 成功
 		<=0:失败
 */
-long VideoNet_Init(fDisConnect cbDisConnect, unsigned long dwUser);
+long VideoNet_Init(fDisConnect cbDisConnect, long dwUser);
 
 /*
 	描述:SDK退出清理
@@ -4181,6 +4365,11 @@ bool VideoNet_Cleanup();
 		错误码	
 */
 long VideoNet_GetLastError();
+
+/*
+	描述:获取SDK版本号
+*/
+char *VideoNet_GetSDKVersion();
 
 /*
 	描述:设置登录设备超时时间和尝试次数
@@ -4244,7 +4433,7 @@ long VideoNet_Logout(long lLoginID);
 		true: 成功
 		false:失败
 */
-bool VideoNet_SetDVRMessCallBack(fMessCallBack cbAlarmcallback, unsigned long lUser);
+bool VideoNet_SetDVRMessCallBack(fMessCallBack cbAlarmcallback,long lUser);
 
 /*
 	描述:建立报警上传通道
@@ -4968,7 +5157,7 @@ bool VideoNet_StopActiveRigister();
 		=1:成功
 		=0:失败
 */
-long VideoNet_SetSubDisconnectCallBack(fSubDisConnectCallBack callBack,DWORD userData);
+long VideoNet_SetSubDisconnectCallBack(fSubDisConnectCallBack callBack,long userData);
 
 /*
 	描述:设置保活时间,perKeeplifeTime(心跳间隔):默认10秒,detectDisconTime(断线检测时间):默认60秒
@@ -5087,12 +5276,8 @@ long VideoNet_CmdGeneral(long lLoginID, int nCmdReq, const char *szCmd, void *lp
 typedef void (*IDownProcess)(int nProcess,int userData);
 typedef void (*IDownData)(unsigned char* data, unsigned int length, int nUserData);
 
-typedef int (*MpsDevAuth)(char *buffer,int size);	//鉴权
-typedef int (*MpsDevDataRecv)(char *buffer,int size,int clientID);	//数据由客户端发给设备
-
-
 /*
-	描述:得到配置的json格式
+	描述:获取配置的json格式
 	参数:
 		lLoginID[in]:	     登陆句柄
 		dwCommand[in]:	     json名
@@ -5112,7 +5297,7 @@ long VideoNet_GetDevConfig_Json(long lLoginID, const char* dwCommand, int nChann
 		lLoginID[in]:	     登陆句柄
 		dwCommand[in]:	     json名
 		nChannelNO[in]:		 通道号,-1:得到全通道配置,0-n:得到单个通道的配置,从0开始
-		lpOutBuffer[in]:	 设置的json字符串
+		lpInBuffer[in]:	 	设置的json字符串
 		waittime[in]:		 等待时间
 	返回值:
 		=1:成功
@@ -5181,7 +5366,8 @@ long VideoNet_ConsumerCmd(long lLoginID, SDK_ConsumerProOpr* lpOutBuffer, int* l
 /*
 	描述:GPIO控制
 	参数:
-	lLoginID[in]:		 登陆句柄
+	lLoginID[in]:	登陆句柄
+	iSencond[in]:	持续时间
 	返回值:
 	=0:成功
 	<0:失败
@@ -5189,11 +5375,11 @@ long VideoNet_ConsumerCmd(long lLoginID, SDK_ConsumerProOpr* lpOutBuffer, int* l
 long VideoNet_GPIOControl(long lLoginID, int iSecond);
 
 //人脸图片
-long VideoNet_StartReceiveFaceImageFile(long lLoginID,int nChannel);
-long VideoNet_StartReceiveFaceImageFileEx(long lLoginID,int nChannel, int enable);
-bool VideoNet_StopReceiveFaceImageFile(long lSubHandle);
-bool VideoNet_SetFaceImageDataCallBack(long lSubHandle,fFaceImageDataCallBack cbFacePictureData, long dwUser);
-bool VideoNet_DelFaceImageDataCallBack(long lSubHandle,fFaceImageDataCallBack cbFacePictureData, long dwUser);
+unsigned long VideoNet_StartReceiveFaceImageFile(long lLoginID,int nChannel);
+unsigned long VideoNet_StartReceiveFaceImageFileEx(long lLoginID,int nChannel, int enable);
+bool VideoNet_StopReceiveFaceImageFile(unsigned long lSubHandle);
+bool VideoNet_SetFaceImageDataCallBack(unsigned long lSubHandle,fFaceImageDataCallBack cbFacePictureData, long dwUser);
+bool VideoNet_DelFaceImageDataCallBack(unsigned long lSubHandle,fFaceImageDataCallBack cbFacePictureData, long dwUser);
 
 //比对结果
 long VideoNet_StartReceiveFaceCompareResult(long lLoginID,int nChannel); 
@@ -5215,15 +5401,16 @@ bool VideoNet_OperationBlackAndWhiteListData(long lSubHandle,WBLIST_ACTION_TYPE 
 long VideoNet_SendForHttp_P2P( char *puuid, char *pDataBuf, int iDateLen );
 // 成功返回接收的字节数，失败返回-1
 long VideoNet_RecvForHttp_P2P( char *puuid, char **pDataBuf, int *iBufSize,int timeout);
-
 typedef void (*OnFoundDevCB)(char * uuid,int state);
-
 int VideoNet_InitQuerythread();
-
 int VideoNet_StartQueryUUID(char *puuid[],int num,OnFoundDevCB findDevCB);
-typedef void (*OnP2PLogData)(char *plog);
 int VideoNet_GetP2PLogData();
+//20190218
+//通过图片查询图片或者录像   返回值:  1成功   0失败
+long VideoNet_Query_Photo_Record(long lLoginID, PICTURE_FINDINFO* lpFindInfo, VIDEONET_PICTURE_DATA *lpFileData, int lMaxCount,int waittime = 5000);
 
+//进行时间偏移，比如你想从抓拍时间往前推5秒钟那么delsecond就传-5，想往后推25秒那就传25
+void  VideoNet_SwitchTime(int delsecond,VIDEONET_TIME *querytime);
 }
 #ifdef __cplusplus 
 }
